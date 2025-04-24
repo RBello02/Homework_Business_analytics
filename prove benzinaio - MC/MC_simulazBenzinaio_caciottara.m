@@ -167,16 +167,16 @@ while clock < TIMEORIZON
 
             end
 
-            % riverifico se la prima colonna di pompe è tutta occupata
-            cond_gen = not(any(inServizio_P,1));
-
-        end % end while
+        end % end for
 
         % Se alla fine del for il cliente non è stato servito vuol dire che
         % la pompa libera stava dall'altro lato e gli toccherà aspettare
         % ancora.
 
-    end % end if
+        % riverifico se la prima colonna di pompe è tutta occupata
+        cond_gen = not(any(inServizio_P,1));
+
+    end % end while
 
     if num_serviti > 0
         % aggiorno le statistiche della coda

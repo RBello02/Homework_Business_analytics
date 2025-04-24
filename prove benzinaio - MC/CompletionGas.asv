@@ -1,0 +1,24 @@
+classdef CompletionGas < EventoFuturo
+% This class is used to describe how to process this specific future event.
+
+methods
+    % Processing the event
+    function ProcessingEvent(obj, SimManager, clock)
+        SimManager.myQueueC.EnqueueingClient(obj.ClockTime);
+        SimManager.myQueueC.myQueueC.list{end}.id_GasStation = obj.GettingID(SimManager);
+
+        % Updating the value
+        obj.ClockTime = Inf;
+    end
+
+    % Looking for the Gas Station Id
+    function id = GettingID(obj, SimManager)
+        for i = 1:4
+            if SimManager.myFutureEvents{i+2}.ClockTime == obj.ClockTime
+                id_p = i;
+            end
+        end
+    end
+
+end
+end

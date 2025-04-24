@@ -1,0 +1,53 @@
+classdef GasStation < handle
+
+properties
+    isBusy 
+    LBUnifDistribution
+    UBUnifDistribution
+end
+
+methods
+    % Constructor
+    function obj = Counter(lb, ub)
+        obj.isBusy = zeros(2,2);
+        obj.LBUnifDistribution = lb;
+        obj.UBUnifDistribution = ub;
+    end
+    
+    % Processing a client
+    function ProcessingClient_GS(obj, clock, SimManager)
+        cond_gen = not(any(obj.isBusy,1));
+        flag = true; % the flag tells me if the last client seen by the while loop was succesfully satisfied
+        
+        while cond_gen(1) && flag
+            flag = false;
+            
+            SidePreference = randsample(2,1); 
+            SimManager.myQueueGS{1}.SidePreference = SidePreference;
+            
+            for id_col = size(obj.isBusy,2):-1:1
+            
+                if not(obj.isBusy(SidePreference,id_col)) && sum(obj.isBusy(SidePreference, 1:id_col)) == 0
+                    % I am looking if the selected gs is not occupied
+                    % and if I can reach it
+                    obj.isBusy(SidePreference,id_col) = 1;
+                    
+                    % updating future events (considero di avere 4 pompe)
+                    idx = sub2ind(size(obj.isBusy), SidePreference, id_col);
+                    SimManager.myFutureEvents{2+idx}.ClockTime = clock + obj.LBUnifDistribution + (obj.UBUnifDistribution - obj.LBUnifDistribution)*rand(1);
+                    
+                    client = SimManager.myQueueGS.DequeueingClient();
+                    
+                    flag = true;
+                    break
+                end
+                
+            end % end for
+    
+            % Checking again for the initial condition
+            cond_gen = not(any(obj.isBusy,1));
+            
+        end % end while
+    end
+end
+end
