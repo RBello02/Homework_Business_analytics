@@ -1,6 +1,5 @@
 classdef Server < handle
-    %SERVER Summary of this class goes here
-    %   Detailed explanation goes here
+    % SERVER è la classe che definisce un singolo server.
     
     properties
         occupato % flag per indicare se il servere è busy
@@ -8,23 +7,24 @@ classdef Server < handle
     end
     
     methods
-        function obj = Server()
-            %SERVER Construct an instance of this class
-            obj.occupato = false;
-            obj.cliente = [];
+
+        % Costruttore
+        function self = Server()
+            self.occupato = false;
+            self.cliente = [];
         end
         
-        function outputArg = start_service()
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+        % Metodo per gestire l'inizio di un servizio presso il server
+        function inizio_servizio(self, cliente, sim, nodo)
+            pass % il server risulterà ora occupato + caclolo del tempo di servizio + schedulazione evento di fine servizio
+        end
+        
+        % Metodo per modificare l'attributo del server affinché risulti non
+        % occupato
+        function libera_server(self)
+            pass % il server risulterà ora libero
         end
 
-        function outputArg = finish_service()
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
-        end
-    end
+    end %end methods
 end
 

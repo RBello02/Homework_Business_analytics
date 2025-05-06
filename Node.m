@@ -1,6 +1,6 @@
 classdef Node < handle
-    %NODE Summary of this class goes here
-    %   Detailed explanation goes here
+    % NODE è la classe che gestisce le code locali, l'arrivo dei clienti e l'assegnazione
+    % ai server. Ad ogni nodo è associato una coda e un gruppo di server.
     
     properties
         id
@@ -13,27 +13,37 @@ classdef Node < handle
     end
     
     methods
-        function obj = Node(id, pol_coda , distr_arrivi, distr_servizi)
-            %NODE Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.id = id;
-            obj.policy_coda = pol_coda;
-            obj.distribuzione_arrivi = distr_arrivi;
-            obj.distribuzione_servizi = distr_servizi;
-            obj.coda = [];
-            obj.numero_servers = size(distr_servizi,2);
-            obj.servers = cell(1, obj.numero_servers);
 
-            for i = 1:obj.numero_servers
-                obj.servers{i} = Server();
+        % Costruttore
+        function self = Node(id, pol_coda , distr_arrivi, distr_servizi)
+            self.id = id;
+            self.policy_coda = pol_coda;
+            self.distribuzione_arrivi = distr_arrivi;
+            self.distribuzione_servizi = distr_servizi;
+            self.coda = [];
+            self.numero_servers = size(distr_servizi,2);
+            self.servers = cell(1, self.numero_servers);
+
+            for i = 1:self.numero_servers
+                self.servers{i} = Server();
             end
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+        % Metodo per la schedulazione degli eventi iniziali
+        function schedulazione_arrivo_iniziale(self, sim)
+            pass % bisogna campionare il primo evento di arrivo
         end
-    end
+        
+        % Metodo per l'aggiunta di un cliente in coda
+        function aggiunta_cliente_al_nodo(self, cliente, sim)
+            pass % se ho un server libero lo servo subito, sennò lo incodo
+        end
+    
+        % Metodo per gestire la fine di un servizio
+        function fine_servizio(self, cliente, sim, server)
+            pass 
+        end
+
+    end %end methods
 end
 

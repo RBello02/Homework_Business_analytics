@@ -1,6 +1,7 @@
 classdef Costumer < handle
-    %COSTUMER Summary of this class goes here
-    %   Detailed explanation goes here
+    % COSTUMER è la classe che rappresenta un cliente nel sistema. Ogni
+    % istanza di questa classe raggruppa le informazioni relative ad un
+    % singolo cliente.
     
     properties
         matrice_del_percorso
@@ -11,19 +12,17 @@ classdef Costumer < handle
     end
     
     methods
-        function obj = Costumer(matr, clock, prop)
-            %COSTUMER Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.matrice_del_percorso = matr;
-            obj.istante_di_arrivo_glob = clock;
-            obj.proprieta = prop;
+
+        % Costruttore
+        function self = Costumer(matr, clock, prop)
+            self.matrice_del_percorso = matr;
+            self.istante_di_arrivo_glob = clock;
+            self.proprieta = prop;
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
-        end
-    end
+
+        % aggiungere funzioni per la gestione delle statistiche??
+
+    end %end methods
 end
 
