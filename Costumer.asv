@@ -28,33 +28,31 @@ classdef Costumer < handle
             %  - nodi di arrivo è un vettore di coppie [i,j] che rappresentano i nodi di arrivo
 
             %% 1° controllo: verificare che il nodo di partenza sia un nodo della matrice di adiacenza
-            if self.nodo_di_partenza > size(matr,1) 
+            if self.nodo_di_partenza(1) > size(matr,1) 
                 error('il nodo di partenza non è un nodo della matrice di adiacenza');
             end
 
             %% 2° controllo: verificare che i nodi di arrivo siano nodi della matrice di adiacenza
-            for i = 1:length(self.nodi_di_arrivo)
-                if self.nodi_di_arrivo(i) > size(self.matrice_del_percorso,1)
+            for i = 1:length(nodi_di_arrivo)
+                if nodi_di_arrivo(i,1) > size(matr,1) || nodi_di_arrivo(i,2) > size(matr,2)
                     error('il nodo di arrivo non è un nodo della matrice di adiacenza');
                 end
             end
 
             %% 3° controllo: la matrice di adiacenza del customer deve essere una matrice stocastica
 
-            if ~ismatrix(self.matrice_del_percorso) 
+            if ~ismatrix(matr) 
                 error('al costruttore non è stata passata una matrice');
             end
             addpath('funzioni')  % andare nel path delle funzioni
-            if Verifica_matrice_stocastica(self.matrice_del_percorso) == 0
+            if Verifica_matrice_stocastica(matr) == 0
                 error('la matrice di adiacenza non è stocastica');
             end
 
             %% 4° controllo: verificare che esista almeno un percorso dal nodo di partenza a uno dei nodi di arrivo
             
-            lista_nodi_visitati = BreadthFirstSearch(self.matrice_del_percorso, self.nodo_di_partenza);
-            if ~isempty(intersect(lista_nodi_visitati, self.nodi_di_arrivo))
-                error('è impossibile raggiungere uno dei nodi di arrivo partendo dai nodi di partenza');
-            end
+
+            lista_nodi_visitati = BreadthFirstSearch(self.matrice_del_percorso, self.)
             
         
         end
