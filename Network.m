@@ -1,117 +1,115 @@
 classdef Network < handle
+    % NETWORK è la classe che definisce la struttura della rete di Jackson 
+    % da modellare a partire dalle informazioni fornite dall’utente.
+    % La struttura è composta da nodi, la cui definizione è compito del
+    % costruttore di questa classe.
 
-    % NETWORK è la classe che si occupa di definire la strutture della rete di Jackson 
-    % che si vuole modellare a partire dalle informazioni passate in input 
-    % dall'uttilizzatore della libreria. La struttura è composta di nodi di
-    % cui la definicione è un compito del costruttore di questa classe.
-    
     properties
-        nodi
-        matrice_di_adiacenza
-        posizione_sink
+        nodi                   
+        matrice_di_adiacenza    
+        distribuzioni_arrivo    % vettore (num_nodi x 1) delle distribuzioni di arrivo esterno
+        distribuzioni_servizio  % matrice (num_nodi x max_num_server) delle distribuzioni di servizio
+        posizione_sink          
     end
-    
-    methods
 
+    methods
         % Costruttore
-        function self = Network(distr_arrivo, distr_servizio, matrice_di_adicenza)
+        function self = Network(distr_arrivo, distr_servizio, matrice_di_adiacenza)
 
             % INPUT:
-            % - distr_arrivo sarà una struttura di dimensione (num_nodi) x 1 in cui in
-            %   ogni riga sarà memorizzata la distribuzione che regola gli
-            %   arrivi dall'esterno per il relativo nodo;
-            % - distr_servizio sarà una struttura di dimensione (num_nodi)x(num_server_max)
-            %   in cui si vanno a memorizzare le distribuzioni che regolano
-            %   i tempi di processo per ogni server di un nodo
-            %   ATTENZIONE: Essendo che due nodi possono avere un numero di
-            %   server diversi, la seconda dimensione di questa matrice è
-            %   determinata a partire dal numero massimo di server che un
-            %   nodo può avere. Per convenzione, se un nodo ha un numero di
-            %   server minore del numero di colonne, la relativa riga sarà
-            %   completata con dei NaN.
-            % - matrice_di_adicenza è una matrice contentente elementi che
-            %   sono tutti compresi tra [0,1] e dei function handle che mi
-            %   permettono di fare degli switch (dipendenti da degli
-            %   attributi del customer) e quindi selezionare dei nodi
+            % - distr_arrivo: vettore (num_nodi x 1) contenente le distribuzioni
+            %   che regolano gli arrivi esterni per ogni nodo
+            % - distr_servizio: matrice (num_nodi x max_num_server) con distribuzioni
+            %   dei tempi di servizio per ogni server di ogni nodo.
+            %   Se un nodo ha meno server, le colonne in eccesso sono NaN.
+            % - matrice_di_adiacenza: matrice quadrata contenente valori in [0,1] o
+            %   function handle per selezione condizionale di nodi
 
             % Validazione della matrice di adiacenza
-            if ~ismatrix(matrice_di_adicenza) 
-               error('al costruttore non è stata passata una matrice');
-            end
-            if ~(size(matrice_di_adicenza,1) == size(matrice_di_adicenza,2))
-                error('la matrice di adiacenza non è quadrata')
+            if ~ismatrix(matrice_di_adiacenza)
+                error('Al costruttore non è stata passata una matrice');
             end
 
-            matrice_senza_FH = Sostituisci_ai_function_handle(matrice_di_adicenza);
-
-            addpath('funzioni')
-
-            if ~(Verifica_matrice_stocastica(matrice_senza_FH)) % verifica stocasticità
-                error('la matrice non è stocastica')
+            if size(matrice_di_adiacenza,1) ~= size(matrice_di_adiacenza,2)
+                error('La matrice di adiacenza non è quadrata');
             end
 
-            posizione_sink = Trova_sink(matrice_senza_FH);
+            % Sostituisce i function handle con valori numerici per verifiche
+            matrice_numerica = self.Trasforma_matrice_numerica(matrice_di_adiacenza);
+
+            % Verifica stocasticità e trova il sink
+            if ~Verifica_matrice_stocastica(matrice_numerica)
+                matrice_di_adiacenza = Normalizzazione_matrice_di_adiacenza(matrice_di_adiacenza);
+            end
             
-            if (lenght(posizione_sink) ~= 1)  % verifica che c'è un solo sink
-                error('Più uscite nel sistema')
+            posizione_sink = self.Trova_sink(matrice_numerica);
+            if length(posizione_sink) ~= 1
+                error('La rete contiene più di un sink');
             end
 
-            % verifica che non ci sono componenti connesse che non
-            % convergono nel sink
-
-            for i = 1:size(matrice_senza_FH,1)
-                nodi_raggiungibili = BreadthFirstSearch(matrice_senza_FH,i);
-                if ~isempty(intersect(nodi_raggiungibili, posizione_sink))
-                    error('Nella rete è presente una componente connessa')
+            % Verifica che il sink sia raggiungibile da ogni nodo
+            for i = 1:size(matrice_numerica,1)
+                nodi_raggiungibili = BreadthFirstSearch(matrice_numerica, i);
+                % Se l'intersezione è vuota, il sink NON è raggiungibile da i
+                if isempty(intersect(nodi_raggiungibili, posizione_sink))
+                    error('Il sink non è raggiungibile da tutti i nodi, rete non connessa');
                 end
             end
 
-            % OUTPUT:
-            % A partire da queste info si va a definire una lista di nodi
-
-            self.matrice_di_adiacenza = matrice_di_adicenza;
-            self.distr_arrivo = distr_arrivo; % matrice di dimensione (num_nodi)x1
-            self.distr_servizio = distr_servizio; % matrice di dimensione (num_nodi)x(num_server_max)
-            self.nodi = {}; % lista che sarà riempita con istanze di Node
-            self.posizione_sink = posizione_sink
+            % Inizializza proprietà
+            self.matrice_di_adiacenza = matrice_di_adiacenza;
+            self.distribuzioni_arrivo = distr_arrivo;
+            self.distribuzioni_servizio = distr_servizio;
+            self.nodi = {};  % verrà popolata con istanze di Node
+            self.posizione_sink = posizione_sink;
         end
 
-        function new_matrix = Sostituisci_ai_function_handle(matrix)
-
-            % è un metodo interno che consente di creare una matrice senza
-            % function handle per verificare che la struttura della matrice
-            % sia giusta 
-
-            dim = size(matrix,1);
-            new_matrix = zeros(dim,dim);
-
-            for i=1:dim
-
-                isFunction = cellfun(@(x) isa(x, 'function_handle'), matrix(i, :)); % mi restituisce un vettore di uni dove c'è il function handle
-                nFunction = sum(isFunction); % numero di function handle sulla riga
-
-                valore_sostitutivo = (nFunction > 0) * (1 / nFunction);
-
-                for j = 1:nC
+        function M_num = Trasforma_matrice_numerica(M)
+            % Trasforma una matrice mista (numeri + function handle) in matrice numerica
+            % Sostituisce i function handle con valori equidistribuiti sulla riga.
+        
+            [num_righe, num_colonne] = size(M);
+            M_num = zeros(num_righe, num_colonne);
+    
+            if ~iscell(M)
+                % Se è già numerica, la restituisco direttamente
+                M_num = M;
+                return;
+            end
+        
+            for i = 1:num_righe
+                isFunc = cellfun(@(x) isa(x, 'function_handle'), M(i,:));
+                nFunc = sum(isFunc);
+        
+                % Valore da assegnare a ogni function handle sulla riga
+                if nFunc > 0
+                    valore_func = 1 / nFunc;
+                else
+                    valore_func = 0; % non usato se nFunc==0
+                end
+        
+                for j = 1:num_colonne
                     if isFunc(j)
-                        new_matrix(i, j) = valore_sostitutivo;
+                        M_num(i,j) = valore_func;
                     else
-                        new_matrix(i, j) = matrix{i, j};
+                        % Se è numerico, lo assegno così com'è
+                        if isnumeric(M{i,j})
+                            M_num(i,j) = M{i,j};
+                        else
+                            error('Elemento non numerico né function handle rilevato');
+                        end
                     end
                 end
-
             end
-
         end
-        function posizione = Trova_sink(matrix)
 
-            % questa funzione trova il sink ( da dove escono i clienti )
-            % nella matrice stocastica senza function handle
 
+
+        % Metodo per trovare il sink nella matrice senza function handle
+        function posizione = Trova_sink(~, matrix)
+            % Il sink è identificato come nodo con valore 1 sulla diagonale
             diagonale = diag(matrix);
-            posizione = find(diagonale == 1);    % trova l'elemento = 1 sulla diagonale 
-
+            posizione = find(diagonale == 1);
         end
     end
 end
-

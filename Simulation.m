@@ -8,17 +8,22 @@ classdef Simulation < handle
         network
         lista_eventi_futuri
         clock % tempo attuale
-        clienti % lista di tutti i clienti nel sistema
+        lista_entita % lista di tutti i clienti nel sistema
+
+        attributi_entita 
+        % struct del tipo nome_attr : {'val1', 'val2'} --> l'entità
+        % assumerà il valore sorteggiando uniformemente 'val1' o 'val2'
     end
     
     methods
 
         % Costruttore
-        function self = Simulation(net)
+        function self = Simulation(net, attributi_entita)
             self.network = net;
             self.lista_eventi_futuri = {}; % creo una lista di celle vuote
             self.clock = 0;
-            self.clienti = {};
+            self.lista_entita = {};
+            self.attributi_entita = attributi_entita;
         end
         
         % Metodo per l'aggiunta di un evento nella lista degli eventi
@@ -34,13 +39,13 @@ classdef Simulation < handle
         end
 
         % Metodo per ottenere la lista dei clienti
-        function lista_clienti = ottieni_clienti(self)
-            lista_clienti = self.clienti;
+        function list_entita = ottieni_entita(self)
+            list_entita = self.lista_entita;
         end
         
         % Metodo per aggiungere un cliente alla lista
-        function memorizzare_nuovo_cliente(self, cliente)
-            self.clienti{end+1} = cliente;
+        function memorizzare_nuova_entita(self, ent)
+            self.lista_entita{end+1} = ent;
         end
 
     end % end methods

@@ -1,6 +1,6 @@
 classdef (Abstract) Distributions < handle
-    %DISTRIBUTIONS Summary of this class goes here
-    %   Detailed explanation goes here
+    % DISTRIBUTIONS è una classe astratta che generalizza il comportamento
+    % delle distribuzioni che definiremo.
     
     methods(Abstract)
         sample(obj, numero_campioni)

@@ -22,7 +22,7 @@ classdef Server < handle
         % Metodo per modificare l'attributo del server affinché risulti non
         % occupato
         function libera_server(self)
-            pass % il server risulterà ora libero
+            self.occupato = false; % il server risulterà ora libero
         end
 
     end %end methods
