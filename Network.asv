@@ -8,7 +8,6 @@ classdef Network < handle
     properties
         nodi
         matrice_di_adiacenza
-        posizione_sink
     end
     
     methods
@@ -60,10 +59,7 @@ classdef Network < handle
             % convergono nel sink
 
             for i = 1:size(matrice_senza_FH,1)
-                nodi_raggiungibili = BreadthFirstSearch(matrice_senza_FH,i);
-                if ~isempty(intersect(nodi_raggiungibili, posizione_sink))
-                    error('Nella rete è presente una componente connessa')
-                end
+                nodi_raggiungibili = Breadth
             end
 
             % OUTPUT:
@@ -73,7 +69,6 @@ classdef Network < handle
             self.distr_arrivo = distr_arrivo; % matrice di dimensione (num_nodi)x1
             self.distr_servizio = distr_servizio; % matrice di dimensione (num_nodi)x(num_server_max)
             self.nodi = {}; % lista che sarà riempita con istanze di Node
-            self.posizione_sink = posizione_sink
         end
 
         function new_matrix = Sostituisci_ai_function_handle(matrix)

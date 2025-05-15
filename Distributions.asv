@@ -1,0 +1,32 @@
+classdef Distributions < handle
+    %DISTRIBUTIONS Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        
+    end
+    
+    methods(Abstract)
+        sample(obj, numero_campioni)
+    end
+end
+
+
+classdef Exponential < Distributions
+
+    % Distribuzione esponenziale 
+
+    properties
+        rate
+    end
+
+    methods
+        % Costruttore
+        function self = Exponential(rate) 
+            self.rate = rate;
+        end
+        
+        function samples = sample(self, numero_campioni)
+            samples = exprnd(selrate, numero_campioni, 1);
+        end
+    end

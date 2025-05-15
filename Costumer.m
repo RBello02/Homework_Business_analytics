@@ -9,7 +9,6 @@ classdef Costumer < handle
         nodi_di_arrivo      % rappresenta i nodi di arrivo del cliente (possono essere più i uno perchè il cliente può avere più possibili uscite)
         istante_di_arrivo_glob % info globale
         istante_di_arrivo_nodo % info locale per il calcolo di una statistica per un certo nodo (ad ogni nodo si sovvrascrive)
-        istante_di_partenza_nodo % info locale per il calcolo di una statistica per un certo nodo (ad ogni nodo si sovvrascrive)
         proprieta % info addizionali sotto forma di struct
     end
     

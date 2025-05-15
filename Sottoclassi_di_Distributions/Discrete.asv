@@ -1,0 +1,24 @@
+classdef Discrete < Distributions
+    %DISCRETE Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        tipo
+        prob
+        ripetizione
+    end
+    
+    methods
+        %Costruttore
+        function self = Discrete(tipo,prob,ripetizione)
+            self.tipo
+            self.prob
+            self.ripetizione
+        end
+
+        function samples = sample(self, numero_campioni)
+            samples = randsample(numero_campioni)
+        end
+    end
+end
+
