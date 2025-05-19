@@ -74,34 +74,33 @@ classdef Network < handle
             if ~iscell(M)
                 % Se è già numerica, la restituisco direttamente
                 M_num = M;
-                return;
-            end
-        
-            for i = 1:num_righe
-                isFunc = cellfun(@(x) isa(x, 'function_handle'), M(i,:));
-                nFunc = sum(isFunc);
-        
-                % Valore da assegnare a ogni function handle sulla riga
-                if nFunc > 0
-                    valore_func = 1 / nFunc;
-                else
-                    valore_func = 0; % non usato se nFunc==0
-                end
-        
-                for j = 1:num_colonne
-                    if isFunc(j)
-                        M_num(i,j) = valore_func;
+            else
+                for i = 1:num_righe
+                    isFunc = cellfun(@(x) isa(x, 'function_handle'), M(i,:));
+                    nFunc = sum(isFunc);
+            
+                    % Valore da assegnare a ogni function handle sulla riga
+                    if nFunc > 0
+                        valore_func = 1 / nFunc;
                     else
-                        % Se è numerico, lo assegno così com'è
-                        if isnumeric(M{i,j})
-                            M_num(i,j) = M{i,j};
-                        else
-                            error('Elemento non numerico né function handle rilevato');
-                        end
+                        valore_func = 0; % non usato se nFunc==0
                     end
-                end
-            end
-        end
+            
+                    for j = 1:num_colonne
+                        if isFunc(j)
+                            M_num(i,j) = valore_func;
+                        else
+                            % Se è numerico, lo assegno così com'è
+                            if isnumeric(M{i,j})
+                                M_num(i,j) = M{i,j};
+                            else
+                                error('Elemento non numerico né function handle rilevato');
+                            end
+                        end
+                    end %end for sulle colonne
+                end %end for sulle righe
+            end %end if 
+        end %end metodo
 
 
 

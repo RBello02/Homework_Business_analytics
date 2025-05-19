@@ -3,27 +3,30 @@ classdef Server < handle
     
     properties
         occupato % flag per indicare se il servere è busy
-        cliente % cliente in lavorazione
+        entita % cliente in lavorazione
+        distribuzione_servizio
     end
     
     methods
 
         % Costruttore
-        function self = Server()
+        function self = Server(distr)
             self.occupato = false;
-            self.cliente = [];
+            self.entita = [];
+            self.distribuzione_servizio = distr;
         end
         
         % Metodo per gestire l'inizio di un servizio presso il server
-        function inizio_servizio(self, cliente, sim, nodo)
-            pass % il server risulterà ora occupato + caclolo del tempo di servizio + schedulazione evento di fine servizio
+        function clock_fine_servizio = inizio_servizio(self, entita, clock_inizio_servizio)
+            % Il server risulterà ora occupato e deve schedulare un evento
+            % di fine servizio
+            self.occupato = true;
+            self.entita{end+1} = entita;
+
+            clock_fine_servizio = self.distribuzione_servizio.sample() + clock_inizio_servizio;
+            
         end
         
-        % Metodo per modificare l'attributo del server affinché risulti non
-        % occupato
-        function libera_server(self)
-            self.occupato = false; % il server risulterà ora libero
-        end
 
     end %end methods
 end

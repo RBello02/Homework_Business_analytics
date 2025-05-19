@@ -18,8 +18,9 @@ classdef Entity < handle
         function self = Entity(clock, attr, nodo_generaz)
             self.istante_di_arrivo_glob = clock;
             self.nodo_di_partenza = nodo_generaz;
-            % self.nodi_di_arrivo = nodi_di_arrivo;
+            self.nodi_di_arrivo = nodi_di_arrivo;
 
+            % Definizione degli attributi dell'entità
             self.proprieta = [];
             campi = fieldnames(attr);
             for i = 1:length(campi)
@@ -42,7 +43,7 @@ classdef Entity < handle
             self.matrice_del_percorso = PersonalizzaRoute(matr, self.proprieta);
 
             % ATTENZIONE:
-            % - nodo di partenza è un elemento della matrice di adiacenza e viene memorizzato attraverso la coppia [i,j]
+            %  - nodo di partenza è un elemento della matrice di adiacenza e viene memorizzato attraverso la coppia [i,j]
             %  - nodi di arrivo è un vettore di coppie [i,j] che rappresentano i nodi di arrivo
 
             % 1° controllo: verificare che il nodo di partenza sia un nodo della matrice di adiacenza
