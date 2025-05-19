@@ -18,11 +18,12 @@ classdef Server < handle
         
         % Metodo per gestire l'inizio di un servizio presso il server
         function clock_fine_servizio = inizio_servizio(self, entita, clock_inizio_servizio)
-            % Il server risulterà ora occupato e deve schedulare un evento
-            % di fine servizio
+           
+            % 1. Il server risulta occupato
             self.occupato = true;
             self.entita{end+1} = entita;
 
+            % 2. Determino quando finirà il servizio
             clock_fine_servizio = self.distribuzione_servizio.sample() + clock_inizio_servizio;
             
         end

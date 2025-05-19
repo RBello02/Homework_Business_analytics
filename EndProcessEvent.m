@@ -1,36 +1,39 @@
 classdef EndProcessEvent < Event
-    % EndProcessEvent rappresenta la fine del servizio di un cliente in una coda
+    % Evento che rappresenta la fine del servizio per un cliente
 
     properties
         nodoID
-        serverID  
+        serverID
     end
 
     methods
         % Costruttore
         function self = EndProcessEvent(clock, nodoID, serverID)
-            self@Event(clock);      % Chiama il costruttore della superclasse
+            self@Event(clock);
             self.nodoID = nodoID;
             self.serverID = serverID;
         end
 
-        % Implementazione del metodo astratto process
+        % Metodo per il processamento dell'evento
         function process(self, clock, sim)
-            % Richiama entita
-            ent = sim.network.nodi{self.nodoID}.servers{self.serverID}.entita;
-            sim.network.nodi{self.nodoID}.servers{self.serverID}.occupato = false;
-           
-            % Routing: decidi dove va l'entità dopo il servizio
-            prox_nodo = find(ent.matrice_del_percorso(self.nodoID, :) == 1);
+            nodo = sim.network.nodi{self.nodoID};
+            server = nodo.servers{self.serverID};
+            ent = server.entita;
 
-            if prox_nodo == sim.network.posizione_sink
-                pass
-            else
-                aggiunta_cliente_al_nodo(self, ent, sim)
+            % 1. Libero il server
+            server.occupato = false;
+            server.entita = [];
+
+            % 2. Determino dove andrà l'entità
+            nextNode = find(ent.matrice_del_percorso(self.nodoID, :) == 1);
+
+            if nextNode ~= sim.network.posizione_sink
+                sim.network.nodi{nextNode}.aggiunta_cliente_al_nodo(ent, sim, clock);
             end
 
-            % Se ci sono altri clienti in coda attuale, schedula nuovo servizio
-            bool = try_servizio(entita, sim);
+            % 3. Tento di avviare il processo per altri utenti
+
+            
         end
     end
 end

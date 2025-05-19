@@ -1,20 +1,17 @@
 classdef (Abstract) Event < handle
-    % EVENT è la classe base astratta per gli eventi.
-    % Le sottoclassi devono implementare il metodo process.
-    
+    % Classe base astratta per gli eventi
+
     properties
-        timestamp % clock mi indica quando l'evento accadrà
+        timestamp_coda % Quando l'evento deve essere processato
     end
-    
+
     methods
-        % Costruttore
         function self = Event(clock)
-            self.timestamp = clock;
+            self.timestamp_coda = clock;
         end
     end
 
     methods (Abstract)
-        % Metodo astratto da implementare nelle sottoclassi
         process(self, clock, sim)
     end
 end

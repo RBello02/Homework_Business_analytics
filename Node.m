@@ -1,87 +1,101 @@
 classdef Node < handle
-    % NODE è la classe che gestisce le code locali, l'arrivo dei clienti e l'assegnazione
-    % ai server. Ad ogni nodo è associato una coda e un gruppo di server.
+    % NODE gestisce le code locali, gli arrivi dei clienti e l'assegnazione ai server.
+    % Ogni nodo ha una coda e un gruppo di server.
     
     properties
         id
         coda
-        policy_coda
         servers
         numero_servers
-        distribuzione_arrivi_esterni % distribuzione probabilistica degli arrivi esterni dal sistema
-        distribuzione_servizi % questo sarà un vettore (eventualmente con tutte le componenti uguali)
+        distribuzione_arrivi_esterni % distribuzione degli arrivi esterni
+        distribuzione_servizi        % vettore delle distribuzioni di servizio per i server
     end
     
     methods
-
+        
         % Costruttore
         function self = Node(id, policy_coda, distr_servizi, distr_arrivi_esterni)
             self.id = id;
-            self.policy_coda = policy_coda;
-
+            
+            % Gestione distribuzione arrivi esterni
             if nargin == 4
-                self.distribuzione_arrivi_esterni = distr_arrivi_esterni; % l'atributo si riferisce agli arrivi esterni dal sistema, il campo può restare vuoto
+                self.distribuzione_arrivi_esterni = distr_arrivi_esterni;
             else
-                self.distribuzione_arrivi_esterni = -1; %valore per dire che non ci sono arivi esterni
+                self.distribuzione_arrivi_esterni = -1; % Nessun arrivo esterno
             end
-                
-            self.coda = [];
-            self.numero_servers = size(distr_servizi,2);
+            
+            % Numero di server e loro inizializzazione
+            self.numero_servers = length(distr_servizi);
             self.servers = cell(1, self.numero_servers);
-
             for i = 1:self.numero_servers
                 self.servers{i} = Server(distr_servizi(i));
             end
-        end
-        
-        % Metodo per la schedulazione degli eventi iniziali (saranno arrivi dall'esterno)
-        function schedulazione_evento_iniziale(self, sim)
-            if   ~(isnumeric(self.distribuzione_arrivi_esterni) && self.distribuzione_arrivi_esterni == -1)
-                clock = self.distribuzione_arrivi_esterni.sample(); % + sim.clock = 0
-                sim.lista_eventi_futuri{end+1} = ArrivalEvent(clock); 
-            end
-
-        end
-        
-        % Metodo per l'aggiunta di un cliente in coda
-        function aggiunta_cliente_al_nodo(self, entita, sim)
             
-            ho_processato_il_cliente = self.try_servizio(entita, sim);
-            if  ~ho_processato_il_cliente 
-                % incodo l'entità
-                self.coda{end+1} = entita;
-            end %end if
-
-        end %end metodo
-    
-        % Metodo per gestire la fine di un servizio
-        function fine_servizio(self, cliente, sim, server)
-            pass 
+            % Controllo della policy della coda
+            valid_policies = {'FIFO', 'LIFO'};
+            if ~ismember(policy_coda, valid_policies)
+                error("Policy coda non valida: deve essere 'FIFO' o 'LIFO'.");
+            end
+            
+            % Creazione della coda in base alla policy scelta
+            switch policy_coda
+                case 'FIFO'
+                    self.coda = FIFOQueue();
+                case 'LIFO'
+                    self.coda = LIFOQueue();
+            end
         end
-
-        % Tentativo di servizio
-        function bool = try_servizio(entita, sim)
-
-            % Se un server è libero processo direttamente il cliente
-            id_srv_libero = -1;
-            for id_srv = 1:self.numero_servers
-                if  ~self.servers{id_srv}.occupato 
-                    id_srv_libero = id_srv;
-                end
-
-                if id_srv_libero >= 0
-                    % l'entità viene direttamente servita
-                    bool = true;
-                    clock_fine_servizio = self.servers{id_srv_libero}.inizio_servizio(entita, sim.clock);
-                    sim.lista_eventi_futuri{end+1} = EndProcessEvent(clock_fine_servizio, self.id, id_srv_libero);
-                else
-                    bool = false;
-                end
-            end %end for sui server
-        end 
         
-
-
-    end %end methods
+        % Schedulazione evento iniziale (arrivi esterni)
+        function schedulazione_evento_iniziale(self, sim)
+            if ~(isnumeric(self.distribuzione_arrivi_esterni) && self.distribuzione_arrivi_esterni == -1)
+                next_arrival_time = self.distribuzione_arrivi_esterni.sample(); % tempo prossimo arrivo
+                sim.lista_eventi_futuri{end+1} = ArrivalEvent(next_arrival_time);
+            end
+        end
+        
+        % Aggiunta di un cliente in coda e tentativo di servizio
+        function aggiunta_cliente_al_nodo(self, entita, sim)
+            self.coda.enqueue(entita, sim.clock); % metto in coda l'entità
+            self.try_servizio(sim);                % provo a servire l'entità
+        end
+        
+        
+        % Tentativo di servizio: prendo un cliente dalla coda e lo assegno a un server libero
+        function success = try_servizio(self, sim)
+            success = false;
+            
+            % 1. Provo a prelevare un'entità dalla coda (se c'è)
+            entita_da_servire = self.coda.dequeue();
+            if isempty(entita_da_servire)
+                return; % nulla da servire
+            end
+            
+            % 2. Cerco un server libero
+            id_srv_libero = -1;
+            for i = 1:self.numero_servers
+                if ~self.servers{i}.occupato
+                    id_srv_libero = i;
+                    break; % esco appena trovo un server libero
+                end
+            end
+            
+            if id_srv_libero == -1
+                % Nessun server libero: rimetto l'entità in coda
+                self.coda.enqueue(entita_da_servire, sim.clock); 
+                success = false;
+                return;
+            end
+            
+            % 3. Assegno il cliente al server libero
+            success = true;
+            clock_fine_servizio = self.servers{id_srv_libero}.inizio_servizio(entita_da_servire, sim.clock);
+            
+            % 4. Programmo l'evento di fine servizio
+            evento = EndProcessEvent(clock_fine_servizio, self.id, id_srv_libero);
+            sim.eventi_futuri.enqueue(evento, clock_fine_servizio);
+            
+        end
+        
+    end
 end
-

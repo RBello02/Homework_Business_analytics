@@ -64,7 +64,7 @@ classdef Network < handle
             self.posizione_sink = posizione_sink;
         end
 
-        function M_num = Trasforma_matrice_numerica(M)
+        function M_num = Trasforma_matrice_numerica(self, M)
             % Trasforma una matrice mista (numeri + function handle) in matrice numerica
             % Sostituisce i function handle con valori equidistribuiti sulla riga.
         
