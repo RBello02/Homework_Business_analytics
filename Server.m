@@ -24,7 +24,7 @@ classdef Server < handle
             self.entita{end+1} = entita;
 
             % 2. Determino quando finirà il servizio
-            clock_fine_servizio = self.distribuzione_servizio.sample() + clock_inizio_servizio;
+            clock_fine_servizio = self.distribuzione_servizio.sample(1) + clock_inizio_servizio;
             
         end
         

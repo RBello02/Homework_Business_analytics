@@ -5,7 +5,8 @@ classdef Network < handle
     % costruttore di questa classe.
 
     properties
-        nodi                   
+        nodi    
+        numero_nodi
         matrice_di_adiacenza    
         distribuzioni_arrivo    % vettore (num_nodi x 1) delle distribuzioni di arrivo esterno
         distribuzioni_servizio  % matrice (num_nodi x max_num_server) delle distribuzioni di servizio
@@ -14,7 +15,7 @@ classdef Network < handle
 
     methods
         % Costruttore
-        function self = Network(distr_arrivo, distr_servizio, matrice_di_adiacenza)
+        function self = Network(matrice_di_adiacenza, distr_arrivo, distr_servizio, policy_code)
 
             % INPUT:
             % - distr_arrivo: vettore (num_nodi x 1) contenente le distribuzioni
@@ -42,73 +43,117 @@ classdef Network < handle
                 matrice_di_adiacenza = Normalizzazione_matrice_di_adiacenza(matrice_di_adiacenza);
             end
             
-            posizione_sink = self.Trova_sink(matrice_numerica);
-            if length(posizione_sink) ~= 1
-                error('La rete contiene più di un sink');
+
+            posizione_sink = self.Trova_sink(matrice_di_adiacenza);
+            if isempty(posizione_sink)
+                error('La rete non contiene sink');
+            elseif length(posizione_sink) > 1
+                error('La rete contiene più di un sink')
             end
 
             % Verifica che il sink sia raggiungibile da ogni nodo
-            for i = 1:size(matrice_numerica,1)
-                nodi_raggiungibili = BreadthFirstSearch(matrice_numerica, i);
-                % Se l'intersezione è vuota, il sink NON è raggiungibile da i
-                if isempty(intersect(nodi_raggiungibili, posizione_sink))
-                    error('Il sink non è raggiungibile da tutti i nodi, rete non connessa');
-                end
+            % Esegui una BFS inversa dal sink (invertendo gli archi)
+            matrice_invertita = matrice_numerica';  % Inverti la direzione degli archi
+            nodi_che_possono_raggiungere_sink = BreadthFirstSearch(matrice_invertita, posizione_sink);
+            
+            if sum(nodi_che_possono_raggiungere_sink) ~= size(matrice_numerica,1)
+                error('Il sink non è raggiungibile da tutti i nodi, rete non connessa');
             end
 
             % Inizializza proprietà
             self.matrice_di_adiacenza = matrice_di_adiacenza;
             self.distribuzioni_arrivo = distr_arrivo;
             self.distribuzioni_servizio = distr_servizio;
-            self.nodi = {};  % verrà popolata con istanze di Node
             self.posizione_sink = posizione_sink;
-        end
+
+            % Popoliamo i nodi
+            self.nodi = {};
+            num_nodi = size(matrice_di_adiacenza, 1);
+            self.numero_nodi = num_nodi;
+            for id_nodo = 1:num_nodi
+                self.nodi{end+1} = Node(id_nodo, policy_code{id_nodo}, distr_servizio{id_nodo}, distr_arrivo{id_nodo});
+            end
+        end %end costruttore
 
         function M_num = Trasforma_matrice_numerica(self, M)
             % Trasforma una matrice mista (numeri + function handle) in matrice numerica
-            % Sostituisce i function handle con valori equidistribuiti sulla riga.
+            % Sostituisce i function handle con valori equidistribuiti per completare a somma 1
+            
+            % Se la matrice è già numerica, non devo fare nulla
+            if ~iscell(M)
+                M_num = M;
+                return;
+            end
         
             [num_righe, num_colonne] = size(M);
             M_num = zeros(num_righe, num_colonne);
-    
-            if ~iscell(M)
-                % Se è già numerica, la restituisco direttamente
-                M_num = M;
-            else
-                for i = 1:num_righe
-                    isFunc = cellfun(@(x) isa(x, 'function_handle'), M(i,:));
-                    nFunc = sum(isFunc);
-            
-                    % Valore da assegnare a ogni function handle sulla riga
-                    if nFunc > 0
-                        valore_func = 1 / nFunc;
+        
+            for i = 1:num_righe
+                isFunc = cellfun(@(x) isa(x, 'function_handle'), M(i,:));
+                numerici = ~isFunc;
+        
+                % Somma dei valori numerici esistenti sulla riga
+                somma_numerici = sum(cellfun(@(x) double(x), M(i, numerici)));
+        
+                nFunc = sum(isFunc);
+        
+                % Calcolo quanto resta da distribuire ai function handle
+                resto = max(1 - somma_numerici, 0);
+        
+                if nFunc > 0
+                    valore_func = resto / nFunc;
+                else
+                    valore_func = 0;
+                end
+        
+                for j = 1:num_colonne
+                    if isFunc(j)
+                        M_num(i,j) = valore_func;
+                    elseif isnumeric(M{i,j})
+                        % Devo convertire il format per non avere problemi
+                        M_num(i,j) = double(M{i,j});
                     else
-                        valore_func = 0; % non usato se nFunc==0
+                        error('Elemento non numerico né function handle rilevato in posizione (%d,%d)', i, j);
                     end
-            
-                    for j = 1:num_colonne
-                        if isFunc(j)
-                            M_num(i,j) = valore_func;
-                        else
-                            % Se è numerico, lo assegno così com'è
-                            if isnumeric(M{i,j})
-                                M_num(i,j) = M{i,j};
-                            else
-                                error('Elemento non numerico né function handle rilevato');
-                            end
-                        end
-                    end %end for sulle colonne
-                end %end for sulle righe
-            end %end if 
-        end %end metodo
-
-
-
-        % Metodo per trovare il sink nella matrice senza function handle
-        function posizione = Trova_sink(~, matrix)
-            % Il sink è identificato come nodo con valore 1 sulla diagonale
-            diagonale = diag(matrix);
-            posizione = find(diagonale == 1);
+                end %end for sulle colonne
+            end %end for sulle righe
         end
-    end
+
+
+
+       % Metodo per trovare il sink nella matrice senza function handle
+       function posizione = Trova_sink(~, matrix)
+            % Trova posizione del sink (elemento == 1) sulla diagonale
+            % Su matrici numeriche cerca valori == 1 (con tolleranza)
+            % Su matrici cell considera function handle come 1
+            
+            toll = 1e-12; % tolleranza per confronto numerico
+            
+            n = size(matrix, 1);
+            valori = zeros(n,1); % vettore per valori sulla diagonale
+            
+            for k = 1:n
+                if isnumeric(matrix)
+                    elem = matrix(k,k);
+                    valori(k) = elem;
+                elseif iscell(matrix)
+                    elem = matrix{k,k};
+                    if isa(elem, 'function_handle')
+                        % Considera function handle come 1
+                        valori(k) = 1;
+                    elseif isnumeric(elem)
+                        valori(k) = elem;
+                    else
+                        valori(k) = 0; % altro tipo, consideralo 0
+                    end
+                else
+                    error('Tipo matrice non supportato');
+                end
+            end %end for
+            
+            % Trova posizione dove valore è vicino a 1
+            posizione = find(abs(valori - 1) < toll);
+        end
+
+    end%end methods
 end

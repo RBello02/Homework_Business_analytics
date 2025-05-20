@@ -16,12 +16,12 @@ classdef Uniform < Distributions
                 self.interi = false;  % default: distribuzione continua
             end
 
-            if lb >= ub
-                error('Il valore inferiore deve essere strettamente minore di quello superiore.');
+            if lb > ub
+                error('Il valore inferiore deve essere minore di quello superiore.');
             end
 
             % Se l'uniforme è negli interi, forzo lb e ub ad essere interi
-            if interi
+            if int
                 lb = ceil(lb);
                 ub = floor(ub);
             end

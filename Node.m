@@ -8,7 +8,6 @@ classdef Node < handle
         servers
         numero_servers
         distribuzione_arrivi_esterni % distribuzione degli arrivi esterni
-        distribuzione_servizi        % vettore delle distribuzioni di servizio per i server
     end
     
     methods
@@ -44,13 +43,14 @@ classdef Node < handle
                 case 'LIFO'
                     self.coda = LIFOQueue();
             end
+
         end
         
         % Schedulazione evento iniziale (arrivi esterni)
         function schedulazione_evento_iniziale(self, sim)
             if ~(isnumeric(self.distribuzione_arrivi_esterni) && self.distribuzione_arrivi_esterni == -1)
-                next_arrival_time = self.distribuzione_arrivi_esterni.sample(); % tempo prossimo arrivo
-                sim.lista_eventi_futuri{end+1} = ArrivalEvent(next_arrival_time);
+                next_arrival_time = self.distribuzione_arrivi_esterni.sample(1); % tempo prossimo arrivo
+                sim.eventi_futuri.enqueue(ArrivalEvent(next_arrival_time, self.id), next_arrival_time);
             end
         end
         
@@ -66,9 +66,10 @@ classdef Node < handle
             success = false;
             
             % 1. Provo a prelevare un'entità dalla coda (se c'è)
-            entita_da_servire = self.coda.dequeue();
-            if isempty(entita_da_servire)
-                return; % nulla da servire
+            if ~isempty(self.coda.lista)
+                entita_da_servire = self.coda.dequeue();
+            else
+                return;
             end
             
             % 2. Cerco un server libero

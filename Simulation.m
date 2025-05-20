@@ -8,6 +8,8 @@ classdef Simulation < handle
         network
         eventi_futuri
         clock 
+        lista_entita % lista delle entità attualmente nella network
+        numero_entita % numero di entità che sono passate
 
         attributi_entita 
         % struct del tipo nome_attr : {'val1', 'val2'} --> l'entità
@@ -22,26 +24,40 @@ classdef Simulation < handle
             self.eventi_futuri = FIFOQueue();
             self.clock = 0;
             self.attributi_entita = attributi_entita;
+            self.numero_entita = 0;
+            self.lista_entita = {};
         end
        
 
         % Metodo che si occupa di eseguire la simulazione finché un certo
         % orizzonte temporale non è stato raggiunto (si possono aggiungere altri criteri di stop)
-        function run(self, TimeOrizon)
+        function list_ent = run(self, TimeOrizon)
+            disp('*****************************************')
+            disp('Inizio simulazione: ')
+
+            % Schedulo un primo evento di arrivo per ciascun nodo
+            for id_nodo = 1:self.network.numero_nodi
+                nodo = self.network.nodi{id_nodo};
+                nodo.schedulazione_evento_iniziale(self); % self = sim
+            end
+            
             
             while self.clock < TimeOrizon
-
+               
                 % 1. Determino il prossimo evento da processare e porto
                 % avanti il clock
                 evento_da_processare = self.eventi_futuri.dequeue();
                 self.clock = self.clock + evento_da_processare.timestamp_coda;
+                fprintf('clock = %d\n', self.clock);
+                fprintf('Classe evento: %s\n', class(evento_da_processare));
+
 
                 % 2. Processo l'evento
                 evento_da_processare.process(self.clock, self);
 
-                print('clock = ', self.clock)
-                print('evento da processarr = ', evento_da_processare)
             end
+
+            list_ent = self.lista_entita;
             
             % stampo qualcosa
         end
