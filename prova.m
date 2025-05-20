@@ -1,3 +1,5 @@
+rng(1)
+
 %% provo a far funzionare la simulazione
 addpath('funzioni')  
 addpath('Sottoclassi_di_Distributions') 
