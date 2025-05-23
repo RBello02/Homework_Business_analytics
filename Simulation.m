@@ -14,6 +14,8 @@ classdef Simulation < handle
         attributi_entita 
         % struct del tipo nome_attr : {'val1', 'val2'} --> l'entità
         % assumerà il valore sorteggiando uniformemente 'val1' o 'val2'
+
+        verbose % controlla solo quanto si stampa durante la simulazione
     end
     
     methods
@@ -26,14 +28,19 @@ classdef Simulation < handle
             self.attributi_entita = attributi_entita;
             self.numero_entita = 0;
             self.lista_entita = {};
+            self.verbose = false;
         end
        
 
         % Metodo che si occupa di eseguire la simulazione finché un certo
         % orizzonte temporale non è stato raggiunto (si possono aggiungere altri criteri di stop)
-        function list_ent = run(self, TimeOrizon)
-            disp('*****************************************')
-            disp('Inizio simulazione: ')
+        function list_ent = run(self, TimeOrizon, verbose)
+            if nargin == 3
+                self.verbose = verbose;
+            end
+
+            fprintf("\n *********************************" + ...
+                " \n INIZIO SIMULAZIONE ...  ")
 
             % Schedulo un primo evento di arrivo per ciascun nodo
             for id_nodo = 1:self.network.numero_nodi
@@ -47,16 +54,18 @@ classdef Simulation < handle
                 % 1. Determino il prossimo evento da processare e porto
                 % avanti il clock
                 evento_da_processare = self.eventi_futuri.dequeue();
-                self.clock = self.clock + evento_da_processare.timestamp_coda;
-                fprintf('clock = %d\n', self.clock);
-                fprintf('Classe evento: %s\n', class(evento_da_processare));
-
+                self.clock = evento_da_processare.timestamp_coda;
+                if verbose
+                    fprintf('\n CLOCK = %3.2f\n ', self.clock);
+                end
 
                 % 2. Processo l'evento
                 evento_da_processare.process(self.clock, self);
 
             end
 
+
+            fprintf("\n FINE SIMULAZIONE \n\n")
             list_ent = self.lista_entita;
             
             % stampo qualcosa

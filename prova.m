@@ -10,39 +10,44 @@ addpath('Sottoclassi_di_Distributions')
 % Nodo 3 → Sink (rimane lì: loop su se stesso)
 
 matr_adiac = {
-    0, 1/4, 0, 3/4, 0;
-    @(x) abs(x.peso - 1) < 1e-12, 0, @(x) abs(x.peso )<1e-12 , 0, 0;
-    0, 0, 0, 1, 0;
-    0, 0, 0, 0, 1;   
-    0, 0, 0, 0, 1; % nodo 5 è un sink
-};
+    0, 0.4, 0.6, 0, 0, 0;
+    0, 0, 0, @(x) x.peso == 1, @(x) x.peso == 0, 0;
+    0, 0, 0, 0, 0, 1;
+    0.2, 0, 0, 0, 0, 0.8;
+    0, 0, 0, 0, 0, 1;
+    0, 0, 0, 0, 0, 1;
+   };
+
 
 n = size(matr_adiac, 1);
 
 
 % Una distribuzione per ciascun nodo: solo il primo riceve arrivi esterni
 distr_arrivo = cell(n,1);
-distr_arrivo{1} = Exponential(1);  
+distr_arrivo{1} = Exponential(8);  
 distr_arrivo{2} = -1;
 distr_arrivo{3} = -1;
-distr_arrivo{4} = Uniform(4,4,true);  
-distr_arrivo{5} = -1;  
+distr_arrivo{4} = -1;
+distr_arrivo{5} = Uniform(14,14,true);  
+distr_arrivo{6} = -1;  
 
 % Una matrice per ciascun nodo con distribuzioni di servizio per ciascun nodo (1 server per nodo)
 distr_servizio = cell(n,1);
-distr_servizio{1} = Exponential(2);  
-distr_servizio{2} = Exponential(1.5);
-distr_servizio{3} = Exponential(1);
-distr_servizio{4} = Exponential(1);
-distr_servizio{5} = Uniform(inf, inf, false);
+distr_servizio{1} = Exponential(10);  
+distr_servizio{2} = Exponential(5);
+distr_servizio{3} = Exponential(12);
+distr_servizio{4} = Exponential(6);
+distr_servizio{5} = Uniform(5,20,false);
+distr_servizio{6} = Uniform(inf, inf, false);
 
 % Una matrice per ciascun nodo con policy per cosa
 policy = cell(n,1);
 policy{1} = 'FIFO';
 policy{2} = 'FIFO';
-policy{3} = 'FIFO';
+policy{3} = 'LIFO';
 policy{4} = 'FIFO';
 policy{5} = 'FIFO';
+policy{6} = 'FIFO';
 
 % Costruzione dell'oggetto Network
 net = Network(matr_adiac, distr_arrivo, distr_servizio, policy);
@@ -51,4 +56,4 @@ net = Network(matr_adiac, distr_arrivo, distr_servizio, policy);
 attributi_entita = [];
 attributi_entita.peso =  {0, 1};
 sim = Simulation(net, attributi_entita)
-le = sim.run(100)
+le = sim.run(100, true);

@@ -60,14 +60,16 @@ classdef Entity < handle
 
             % 1. Controllo che la matrice personalizzata sia una matrice (numeric)
             if ~ismatrix(self.matrice_del_percorso)
-                error('La matrice di adiacenza personalizzata non è una matrice valida.');
+                disp('Matrice del Percorso: ')
                 disp(self.matrice_del_percorso);
+                error('La matrice di adiacenza personalizzata non è una matrice valida.');
             end
             
             % 2. Verifico che il nodo di partenza sia valido
             if self.nodo_di_partenza > size(matr_adiac_net,1) || self.nodo_di_partenza < 1
-                error('Il nodo di partenza non è valido per la matrice di adiacenza.');
+                disp('Matrice del Percorso: ')
                 disp(self.matrice_del_percorso);
+                error('Il nodo di partenza non è valido per la matrice di adiacenza.');
             end
             
             % 3. Verifico che il sink coincida con il sink dalla network
@@ -75,8 +77,9 @@ classdef Entity < handle
             sink_personale = sim.network.Trova_sink(self.matrice_del_percorso);
 
             if ~sink_personale == sink_glob
-                error("'La matrice del percorso per l'entità non ha sink coincidente con il sink globale.")
+                disp('Matrice del Percorso: ')
                 disp(self.matrice_del_percorso);
+                error("'La matrice del percorso per l'entità non ha sink coincidente con il sink globale.");
             end
             
             
@@ -85,30 +88,32 @@ classdef Entity < handle
             
             % 4. Verifico che la matrice sia stocastica (righe sommano a 1)
             if Verifica_matrice_stocastica(self.matrice_del_percorso) == 0
-                error('La matrice di adiacenza personalizzata non è stocastica.');
+                disp('Matrice del Percorso: ')
                 disp(self.matrice_del_percorso);
+                error('La matrice di adiacenza personalizzata non è stocastica.');
             end
             
             % 5. Verifico che esista un percorso dal nodo di partenza a uno dei nodi di arrivo
             nodi_visitabili = BreadthFirstSearch(self.matrice_del_percorso, self.nodo_di_partenza);
             % Verifica se almeno uno dei nodi di arrivo è raggiungibile (nodo di arrivo = sink)
             if ~any(nodi_visitabili(sink_personale))
-                error('Non è possibile raggiungere nessuno dei nodi di arrivo partendo dal nodo di partenza.');
+                disp('Matrice del Percorso: ')
                 disp(self.matrice_del_percorso);
+                error('Non è possibile raggiungere nessuno dei nodi di arrivo partendo dal nodo di partenza.');
             end
             
         end
         
         
         % Metodo per personalizzare la matrice di transizione in base agli attributi
-        function matr_binaria = PersonalizzaRoute(self, matr)
+        function matr_stocastica = PersonalizzaRoute(self, matr)
             % matr: cell array (con numeri o function handle)
             % self.proprieta: attributi dell'entità
             % OUTPUT: matrice binaria con un solo 1 per riga (prossimo nodo scelto)
         
             prop_entita = self.proprieta;
             [num_righe, num_colonne] = size(matr);
-            matr_binaria = zeros(num_righe, num_colonne);  % inizializza matrice finale
+            matr_stocastica = zeros(num_righe, num_colonne);  % inizializza matrice finale
         
             for id_riga = 1:num_righe
                 prob_riga = zeros(1, num_colonne);  % riga di probabilità
@@ -135,22 +140,14 @@ classdef Entity < handle
         
                     else
                         error(['Elemento non riconosciuto in (' num2str(id_riga) ',' num2str(id_col) ')']);
-                    end
-                end
+                    end %end case elem is a funcion handle
+                end %end loop sulle colonne
         
+                % Normalizzazione
                 somma = sum(prob_riga);
-                if somma == 0
-                    % Nessuna probabilità specificata: distribuzione uniforme
-                    prob_riga(:) = 1 / num_colonne;
-                else
-                    % Normalizzazione
-                    prob_riga = prob_riga / somma;
-                end
-        
-                % Estrai l'indice del nodo di destinazione
-                col_scelta = randsample(1:num_colonne, 1, true, prob_riga);
-                matr_binaria(id_riga, col_scelta) = 1;
-            end
+                matr_stocastica(id_riga, :) = prob_riga / somma;
+     
+            end %end for sulle righe
         end
 
         

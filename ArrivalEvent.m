@@ -17,6 +17,9 @@ classdef ArrivalEvent < Event
         %   2. schedulo il prossimo evento
         function process(self, clock, sim)
             ent = Entity(clock, sim.attributi_entita, self.nodoID, sim);
+            if sim.verbose
+                fprintf("L'entità %d è stata generata al nodo %d. \n ", ent.id, self.nodoID)
+            end
             sim.network.nodi{self.nodoID}.aggiunta_cliente_al_nodo(ent, sim);
 
             nextTime = clock + sim.network.nodi{self.nodoID}.distribuzione_arrivi_esterni.sample(1);

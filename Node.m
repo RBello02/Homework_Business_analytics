@@ -83,7 +83,7 @@ classdef Node < handle
             
             if id_srv_libero == -1
                 % Nessun server libero: rimetto l'entità in coda
-                self.coda.enqueue(entita_da_servire, sim.clock); 
+                self.coda.enqueue(entita_da_servire, entita_da_servire.timestamp_coda); 
                 success = false;
                 return;
             end
@@ -95,7 +95,11 @@ classdef Node < handle
             % 4. Programmo l'evento di fine servizio
             evento = EndProcessEvent(clock_fine_servizio, self.id, id_srv_libero);
             sim.eventi_futuri.enqueue(evento, clock_fine_servizio);
-            
+
+            if sim.verbose
+                fprintf("L'entità %d ha iniziato il servizio presso il server %d del nodo %d. \n ", entita_da_servire.id, id_srv_libero, self.id)
+            end
+
         end
         
     end

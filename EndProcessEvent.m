@@ -24,9 +24,13 @@ classdef EndProcessEvent < Event
             server.occupato = false;
             server.entita = [];
 
-            % 2. Determino dove andrà l'entità
-            nextNode = find(abs(ent.matrice_del_percorso(self.nodoID, :) - 1) < 1e-12);
+            % 2. Determino dove andrà l'entità estraendo il nodo di
+            % destinazione
+            nextNode = randsample(1:size(ent.matrice_del_percorso, 2), 1, true, ent.matrice_del_percorso(self.nodoID, :));
             ent.nodo_attuale = nextNode;
+            if sim.verbose
+                fprintf("L'entità %d ha terminato il servizio al nodo %d ed è passata al nodo %d. \n ", ent.id, nodo.id, nextNode)
+            end
 
             if nextNode ~= sim.network.posizione_sink
                 sim.network.nodi{nextNode}.aggiunta_cliente_al_nodo(ent, sim);
@@ -34,6 +38,7 @@ classdef EndProcessEvent < Event
 
             % 3. Tento di avviare il processo per altri utenti
             sim.network.nodi{self.nodoID}.try_servizio(sim);
+
             
         end
     end

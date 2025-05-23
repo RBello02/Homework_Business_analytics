@@ -2,7 +2,7 @@ classdef Exponential < Distributions
     % EXPONENTIAL --> si occupa di gestire la distribuzione esponenziale
     
     properties
-        rate % λ della distribuzione esponenziale
+        rate % il rate corrisponde con la media della distribuzione esponenziale
     end
 
     methods
@@ -18,7 +18,7 @@ classdef Exponential < Distributions
         
         % Metodo per la generazione di campioni
         function samples = sample(self, numero_campioni)
-            samples = exprnd(1 / self.rate, numero_campioni, 1);  % nota: MATLAB usa 1/λ
+            samples = exprnd(self.rate, numero_campioni, 1);  
         end
     end
 
