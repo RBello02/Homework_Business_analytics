@@ -91,6 +91,15 @@ classdef Node < handle
             % 3. Assegno il cliente al server libero
             success = true;
             clock_fine_servizio = self.servers{id_srv_libero}.inizio_servizio(entita_da_servire, sim.clock);
+
+            % Aggiorno le statistiche del nodo:
+
+            % ciclo per trovare la statistica: tempo medio nella network
+            for i = 1:numel(sim.statistics)
+                if isa(sim.statistics{i}, 'AvarageEntityQueuesTime')
+                   sim.statistics{i}.update_stat(self.id, entita_da_servire.timestamp_coda,sim.clock)
+                end
+            end
             
             % 4. Programmo l'evento di fine servizio
             evento = EndProcessEvent(clock_fine_servizio, self.id, id_srv_libero);

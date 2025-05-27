@@ -37,10 +37,7 @@ classdef EndProcessEvent < Event
             end
 
             if nextNode == sim.network.posizione_sink
-
-                 % tolgo un'entità
-                sim.numero_entita = sim.numero_entita - 1;
-
+                
                 % ciclo per trovare la statistica: tempo medio nella network
                 for i = 1:numel(sim.statistics)
                     if isa(sim.statistics{i}, 'AvarageEntityNetworkTime')
@@ -49,7 +46,6 @@ classdef EndProcessEvent < Event
                        sim.statistics{i}.update_stat(sim.clock, sim.numero_entita)
                     end
                 end
-
             end
 
 
