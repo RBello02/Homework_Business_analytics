@@ -41,11 +41,8 @@ classdef AvarageEntityQueuesTime < StatManager
                         end
 
                         stat(idx_nodo) = self.lista{idx_nodo}/self.Num_entita_per_coda(idx_nodo);
-                    elseif isnan(self.Num_entita_per_coda(idx_nodo))
-                        continue
                     else
                         continue
-                        %error('Nessuna entità è uscita dal nodo')
                     end
             end 
         end 

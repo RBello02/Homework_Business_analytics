@@ -44,6 +44,7 @@ classdef Simulation < handle
             self.statistics{end+1} = AvarageEntityNetworkTime();
             self.statistics{end+1} = AvarageEntityQueuesTime(self.network);
             self.statistics{end+1} = AvarageNumEntityIntoNetwork();
+            self.statistics{end+1} = AvarageNumEntityIntoNodes(self.network);
 
             if nargin == 3
                 self.verbose = verbose;
@@ -82,6 +83,7 @@ classdef Simulation < handle
             avg_ent_net_time = self.statistics{1}.return_stat()
             avg_ent_queues_time = self.statistics{2}.return_stat(self)
             avg_ent_net = self.statistics{3}.return_stat(self)
+            avg_num_ents_nodes = self.statistics{4}.return_stat(self)
             
         end
 

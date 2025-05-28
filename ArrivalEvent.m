@@ -34,6 +34,9 @@ classdef ArrivalEvent < Event
                 if isa(sim.statistics{i}, 'AvarageNumEntityIntoNetwork')
                    sim.statistics{i}.update_stat(sim.clock, sim.numero_entita)
                 end
+                if isa(sim.statistics{i}, 'AvarageNumEntityIntoNodes')
+                    sim.statistics{i}.update_stat(self.nodoID, sim.clock, length(sim.network.nodi{self.nodoID}.coda))
+                end
             end
             
         end

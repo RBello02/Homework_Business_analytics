@@ -18,7 +18,7 @@ classdef AvarageNumEntityIntoNetwork < StatManager
 
             % self.tracker_value è l'altezza del rettangolo da chiudere
             % num_entita è l'altezza del rettangolo che stiamo iniziando
-            % (clock-self.tracker_time) è la base del triangolo da chiudere
+            % (clock-self.tracker_time) è la base del rettangolo da chiudere
 
             self.lista{end} = self.lista{end} + (clock-self.tracker_time)*self.tracker_value;
             self.tracker_value = num_entita;

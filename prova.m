@@ -1,4 +1,4 @@
-rng(1)
+%rng(1)
 
 %% provo a far funzionare la simulazione
 addpath('funzioni')  
@@ -35,7 +35,7 @@ distr_arrivo{6} = -1;
 distr_servizio = cell(n,1);
 distr_servizio{1} = Exponential(10);  
 distr_servizio{2} = Exponential(5);
-distr_servizio{3} = Exponential(1099);
+distr_servizio{3} = Exponential(10);
 distr_servizio{4} = Exponential(6);
 distr_servizio{5} = Uniform(5,20,false);
 distr_servizio{6} = Uniform(inf, inf, false);

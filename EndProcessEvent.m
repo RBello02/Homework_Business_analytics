@@ -47,6 +47,8 @@ classdef EndProcessEvent < Event
                        sim.statistics{i}.update_stat(ent.istante_di_arrivo_glob, clock)
                     elseif isa(sim.statistics{i}, 'AvarageNumEntityIntoNetwork')
                        sim.statistics{i}.update_stat(sim.clock, sim.numero_entita)
+                    elseif isa(sim.statistics{i}, 'AvarageNumEntityIntoNodes')
+                       sim.statistics{i}.update_stat(self.nodoID, sim.clock, length(sim.network.nodi{self.nodoID}.coda)) %non va messo qua correggi
                     end
                 end
 
