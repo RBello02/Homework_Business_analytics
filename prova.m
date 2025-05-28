@@ -1,5 +1,9 @@
 %rng(1)
 
+clear 
+close all 
+clc
+
 %% provo a far funzionare la simulazione
 addpath('funzioni')  
 addpath('Sottoclassi_di_Distributions') 
@@ -24,19 +28,19 @@ n = size(matr_adiac, 1);
 
 % Una distribuzione per ciascun nodo: solo il primo riceve arrivi esterni
 distr_arrivo = cell(n,1);
-distr_arrivo{1} = Exponential(8);  
-distr_arrivo{2} = Exponential(10);
+distr_arrivo{1} = Exponential(20);  
+distr_arrivo{2} = Exponential(60);
 distr_arrivo{3} = -1;
 distr_arrivo{4} = -1;
-distr_arrivo{5} = Uniform(14,14,true);  
+distr_arrivo{5} = Uniform(20,20,true);  
 distr_arrivo{6} = -1;  
 
 % Una matrice per ciascun nodo con distribuzioni di servizio per ciascun nodo (1 server per nodo)
 distr_servizio = cell(n,1);
-distr_servizio{1} = Exponential(10);  
-distr_servizio{2} = Exponential(5);
-distr_servizio{3} = Exponential(10);
-distr_servizio{4} = Exponential(6);
+distr_servizio{1} = Exponential(30);  
+distr_servizio{2} = Exponential(2);
+distr_servizio{3} = Exponential(18);
+distr_servizio{4} = Exponential(1);
 distr_servizio{5} = Uniform(5,20,false);
 distr_servizio{6} = Uniform(inf, inf, false);
 
@@ -56,4 +60,4 @@ net = Network(matr_adiac, distr_arrivo, distr_servizio, policy);
 attributi_entita = [];
 attributi_entita.peso =  {0, 1};
 sim = Simulation(net, attributi_entita)
-le = sim.run(100, true);
+le = sim.run(1000,true);

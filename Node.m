@@ -98,6 +98,8 @@ classdef Node < handle
             for i = 1:numel(sim.statistics)
                 if isa(sim.statistics{i}, 'AvarageEntityQueuesTime')
                    sim.statistics{i}.update_stat(self.id, entita_da_servire.timestamp_coda,sim.clock)
+                elseif isa(sim.statistics{i}, 'AvarageNumEntityIntoNodes')
+                   sim.statistics{i}.update_stat(self.id, sim.clock, length(self.coda))
                 end
             end
             

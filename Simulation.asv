@@ -68,7 +68,7 @@ classdef Simulation < handle
                 % avanti il clock
                 evento_da_processare = self.eventi_futuri.dequeue();
                 self.clock = evento_da_processare.timestamp_coda;
-                if self.verbose
+                if verbose
                     fprintf('\n CLOCK = %3.2f\n ', self.clock);
                 end
 
@@ -82,30 +82,17 @@ classdef Simulation < handle
             list_ent = self.lista_entita;
             
             % stampo le statistiche
-            if self.verbose
+            if verbose
                 avg_ent_net_time = self.statistics{1}.return_stat();
                 fprintf('\n Avarage time into the network per entity  = %3.2f\n', avg_ent_net_time)
                 avg_ent_queues_time = self.statistics{2}.return_stat(self);
                 fprintf('\n Avarage time spent in the queues per entity:\n')
-                for i = 1:size(self.network.matrice_di_adiacenza,1)
-                    if i~=self.network.posizione_sink
-                        fprintf('\n Node %1.f: %3.2f', i, avg_ent_queues_time(i))
-                    else
-                        fprintf('\n Node %1.f: SINK', i)
-                    end
+                for i = 1:size(sim.network.matrice_di_adiacenza,1)
+                    fprintf('\n Node %1.f %3.2f', i, avg_ent_queues_time(i))
                 end
                 avg_ent_net = self.statistics{3}.return_stat(self);
-                fprintf('\n\n Avarage time spent in the queues per entity  = %3.2f\n', avg_ent_net_time)
-                avg_num_ents_nodes = self.statistics{4}.return_stat(self);
-                fprintf('\n Avarage number of entities in the nodes of the network:\n')
-                for i = 1:size(self.network.matrice_di_adiacenza,1)
-                    if i~=self.network.posizione_sink
-                        fprintf('\n Node %1.f: %3.2f', i, avg_num_ents_nodes(i))
-                    else
-                        fprintf('\n Node %1.f: SINK', i)
-                    end
-                end
-                fprintf('\n')
+                fprintf('\n Avarage time spent in the queues per entity  = %3.2f\n', avg_ent_net_time)
+                avg_num_ents_nodes = self.statistics{4}.return_stat(self)
             end
             
         end

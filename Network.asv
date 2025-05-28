@@ -55,16 +55,15 @@ classdef Network < handle
             matrice_invertita = matrice_numerica';  % Inverti la direzione degli archi
             nodi_che_possono_raggiungere_sink = BreadthFirstSearch(matrice_invertita, posizione_sink);
             generatori = self.trova_generatori(distr_arrivo);
+            %if sum(nodi_che_possono_raggiungere_sink) ~= size(matrice_numerica,1)
+            %    error('Il sink non è raggiungibile da tutti i nodi, rete non connessa');
+            %end
             if all(ismember(generatori,nodi_che_possono_raggiungere_sink))
                 error('Il sink non è raggiungibile da tutti i nodi, rete non connessa');
             end
             % Il controllo precendentemente fatto non garantisce al 100%
             % che partendo da un generatore raggiungo un sink, proprio
-            % perchè ci sono degli archi con pesi che sono function handle,
-            % in teoria dovremmo considerare tutte le possibili
-            % combinazioni. In generale se non si passa il test
-            % precedentemente fatto allora è sicuro che esiste un nodo
-            % generatore dal quale non si può uscire dalla rete
+            % perchè ci sono 
 
             % Inizializza proprietà
             self.matrice_di_adiacenza = matrice_di_adiacenza;
