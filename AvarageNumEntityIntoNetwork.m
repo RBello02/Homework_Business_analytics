@@ -44,11 +44,15 @@ classdef AvarageNumEntityIntoNetwork < StatManager
                 self.y_plot(end+1) = y_middle;
                 set(self.h, 'XData', self.x_plot, 'YData', self.y_plot);
                 title(sprintf('Numero di entità nella rete - clock %.2f', self.x_plot(end)));
+                xlabel('Tempo (clock)');  % <-- Etichetta asse x
+                ylabel('Numero di entità');  % <-- Etichetta asse y
                 drawnow;
                 self.x_plot(end+1) = x_after;
                 self.y_plot(end+1) = y_middle;
                 set(self.h, 'XData', self.x_plot, 'YData', self.y_plot);
                 title(sprintf('Numero di entità nella rete - clock %.2f', self.x_plot(end)));
+                xlabel('Tempo (clock)');  % <-- Etichetta asse x
+                ylabel('Numero di entità');  % <-- Etichetta asse y
                 drawnow;
             end
         end
