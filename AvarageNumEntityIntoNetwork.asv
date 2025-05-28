@@ -13,6 +13,11 @@ classdef AvarageNumEntityIntoNetwork < StatManager
             self.tracker_time = 0;
             self.tracker_value = 0;
             self.integrale = 0;
+
+            self.lista = cell(size(net.matrice_adiacenza,1), 1);
+            for i = 1:length(self.lista)
+                self.lista{i} = 0;
+            end
         end
         
         function update_stat(self, clock, num_entita)
@@ -29,7 +34,9 @@ classdef AvarageNumEntityIntoNetwork < StatManager
         function stat = return_stat(self)
             
             if self.tracker_time ~= 0
-                stat = 
+                stat = self.integrale/self.tracker_time;
+            else
+                error('Impossibile calcolare la lunghezza media di entità nel network')
             end
         end
     end

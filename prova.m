@@ -25,7 +25,7 @@ n = size(matr_adiac, 1);
 % Una distribuzione per ciascun nodo: solo il primo riceve arrivi esterni
 distr_arrivo = cell(n,1);
 distr_arrivo{1} = Exponential(8);  
-distr_arrivo{2} = -1;
+distr_arrivo{2} = Exponential(10);
 distr_arrivo{3} = -1;
 distr_arrivo{4} = -1;
 distr_arrivo{5} = Uniform(14,14,true);  
@@ -35,7 +35,7 @@ distr_arrivo{6} = -1;
 distr_servizio = cell(n,1);
 distr_servizio{1} = Exponential(10);  
 distr_servizio{2} = Exponential(5);
-distr_servizio{3} = Exponential(12);
+distr_servizio{3} = Exponential(1099);
 distr_servizio{4} = Exponential(6);
 distr_servizio{5} = Uniform(5,20,false);
 distr_servizio{6} = Uniform(inf, inf, false);

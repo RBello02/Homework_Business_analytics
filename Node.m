@@ -56,7 +56,7 @@ classdef Node < handle
         
         % Aggiunta di un cliente in coda e tentativo di servizio
         function aggiunta_cliente_al_nodo(self, entita, sim)
-            self.coda.enqueue(entita, sim.clock); % metto in coda l'entità
+            self.coda.enqueue(entita, sim.clock);  % metto in coda l'entità
             self.try_servizio(sim);                % provo a servire l'entità
         end
         

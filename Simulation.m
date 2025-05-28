@@ -80,8 +80,8 @@ classdef Simulation < handle
             
             % stampo le statistiche
             avg_ent_net_time = self.statistics{1}.return_stat()
-            avg_ent_queues_time = self.statistics{2}.return_stat()
-            avg_ent_net = self.statistics{3}.return_stat()
+            avg_ent_queues_time = self.statistics{2}.return_stat(self)
+            avg_ent_net = self.statistics{3}.return_stat(self)
             
         end
 
