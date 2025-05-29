@@ -1,0 +1,47 @@
+function stampa_grafo(network)
+
+% questa funzione si occupa della stampa del grafo della rete 
+
+matrice_di_adiacenza = network.matrice_di_adiacenza;
+posizione_function_handle = []
+for i = 1:
+posizione_sink = network.posizione_sink;
+addpath('funzioni')
+matrice_con_uni = Sostituisci_uno(matrice_di_adiacenza);
+matrice_con_uni(posizione_sink,:)=zeros(size(matrice_di_adiacenza,1),1); % tolgo il self loop nel sink
+posizione_generatori = [];
+
+for i = 1:length(network.distribuzioni_arrivo)
+    if  isa(network.distribuzioni_arrivo{i}, 'Distributions')
+        posizione_generatori(end+1) = i;
+    end
+end
+
+G = digraph(matrice_con_uni);   % crea il grafo
+
+% Inizializza il colore di tutti i nodi
+num_nodi = numnodes(G);
+colore_nodi = repmat([0 0.4470 0.7410], num_nodi, 1); % blu standard
+
+colore_nodi(posizione_sink,:) = [0,0,0]; %il sink è nero
+for ind = 1:length(posizione_generatori)
+    colore_nodi(posizione_generatori(ind),:) = [0.8500 0.3250 0.0980]; % rosso
+end
+
+% Disegna il grafo con i colori personalizzati
+figure;
+p = plot(G, 'NodeColor', colore_nodi, 'MarkerSize', 7, 'LineWidth', 1.5);
+title('Graph');
+p.HandleVisibility = 'off';  % <-- Nasconde questo oggetto dalla legenda
+
+
+%  legenda
+hold on
+scatter(nan, nan, 70, [0,0,0], 'filled', 'DisplayName', 'Sink');
+scatter(nan, nan, 70, [0.8500 0.3250 0.0980], 'filled', 'DisplayName', 'Starting Nodes');
+legend('Location', 'bestoutside');
+
+
+
+end
+
