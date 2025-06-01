@@ -7,6 +7,7 @@ classdef (Abstract) StatManager < handle
     
     methods (Abstract)
         update_stat
+        return_stat
     end
 end
 

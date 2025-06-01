@@ -12,7 +12,6 @@ for i = 1:size(matrice_di_adiacenza,1)
     end
 end
 posizione_sink = network.posizione_sink;
-addpath('funzioni')
 matrice_con_uni = Sostituisci_uno(matrice_di_adiacenza);
 matrice_con_uni(posizione_sink,:)=zeros(size(matrice_di_adiacenza,1),1); % tolgo il self loop nel sink
 posizione_generatori = [];

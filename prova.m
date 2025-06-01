@@ -5,8 +5,9 @@ close all
 clc
 
 %% provo a far funzionare la simulazione
-addpath('funzioni')  
-addpath('Sottoclassi_di_Distributions') 
+addpath('lib')
+addpath('lib\funzioni')  
+addpath('lib\Sottoclassi_di_Distributions') 
 
 % Matrice di adiacenza (3 nodi)
 % Nodo 1 → Nodo 2 (con probabilità 1)
@@ -60,4 +61,5 @@ net = Network(matr_adiac, distr_arrivo, distr_servizio, policy);
 attributi_entita = [];
 attributi_entita.peso =  {0, 1};
 sim = Simulation(net, attributi_entita)
-le = sim.run(1000,true);
+le = sim.run(100,true);
+le1 = sim.run(100, true);

@@ -27,6 +27,11 @@ classdef Server < handle
             clock_fine_servizio = self.distribuzione_servizio.sample(1) + clock_inizio_servizio;
             
         end
+
+        % Libero il server
+        function libera_server(obj)
+            obj.occupato = false;
+        end
         
 
     end %end methods

@@ -83,9 +83,6 @@ classdef Entity < handle
             end
             
             
-            % Aggiungo il path delle funzioni necessarie per i controlli
-            addpath('funzioni');
-            
             % 4. Verifico che la matrice sia stocastica (righe sommano a 1)
             if Verifica_matrice_stocastica(self.matrice_del_percorso) == 0
                 disp('Matrice del Percorso: ')

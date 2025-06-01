@@ -18,9 +18,13 @@ classdef AvarageNumEntityIntoNetwork < StatManager
             self.lista{end+1} = 0;
             self.x_plot = [];
             self.y_plot = [];
-            self.h = plot(NaN, NaN, 'b.-');  % inizializza il grafico
+
+            
             if nargin >= 1
                 self.verbose = verbose;
+            end
+            if verbose
+                self.h = plot(NaN, NaN, 'b.-');  % inizializza il grafico
             end
         end
         

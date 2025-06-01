@@ -8,6 +8,7 @@ classdef (Abstract) AbstractQueue < handle
     methods (Abstract)
         enqueue(obj, elemento, clock)
         elemento = dequeue(obj)
+        clear_queue(obj)
     end
 end
 

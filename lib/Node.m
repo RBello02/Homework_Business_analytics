@@ -27,7 +27,7 @@ classdef Node < handle
             self.numero_servers = length(distr_servizi);
             self.servers = cell(1, self.numero_servers);
             for i = 1:self.numero_servers
-                self.servers{i} = Server(distr_servizi(i));
+                self.servers{i} = Server(distr_servizi{i});
             end
             
             % Controllo della policy della coda
@@ -111,6 +111,19 @@ classdef Node < handle
                 fprintf("L'entità %d ha iniziato il servizio presso il server %d del nodo %d. \n ", entita_da_servire.id, id_srv_libero, self.id)
             end
 
+        end
+
+
+        % Metodo per la reinizializzazione del nodo (libera server + svuota la coda)
+        function clear_node(obj)
+
+            % Libero i server
+            for id_server = 1:obj.numero_servers
+                obj.servers{id_server}.libera_server();
+            end
+
+            % Svuoto la coda
+            obj.coda.clear_queue();
         end
         
     end

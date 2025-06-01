@@ -37,11 +37,14 @@ classdef Simulation < handle
 
         % Metodo che si occupa di eseguire la simulazione finché un certo
         % orizzonte temporale non è stato raggiunto (si possono aggiungere altri criteri di stop)
-        function [list_ent, avg_ent_net_time, avg_ent_queues_time, avg_ent_net]  = ...
-                run(self, TimeOrizon, verbose)
+        function stats = run(self, TimeOrizon, verbose)
 
             if nargin == 3
                 self.verbose = verbose;
+            end
+
+            if verbose
+                figure;
             end
 
             % inizializzo le statistiche
@@ -79,7 +82,6 @@ classdef Simulation < handle
 
 
             fprintf("\n FINE SIMULAZIONE \n\n")
-            list_ent = self.lista_entita;
             
             % stampo le statistiche
             if self.verbose
@@ -94,8 +96,8 @@ classdef Simulation < handle
                         fprintf('\n Node %1.f: SINK', i)
                     end
                 end
-                avg_ent_net = self.statistics{3}.return_stat(self);
-                fprintf('\n\n Avarage time spent in the queues per entity  = %3.2f\n', avg_ent_net_time)
+                avg_num_ent_net = self.statistics{3}.return_stat(self);
+                fprintf('\n\n Avarage number of entities in the network  = %3.2f\n', avg_num_ent_net)
                 avg_num_ents_nodes = self.statistics{4}.return_stat(self);
                 fprintf('\n Avarage number of entities in the nodes of the network:\n')
                 for i = 1:size(self.network.matrice_di_adiacenza,1)
@@ -107,8 +109,30 @@ classdef Simulation < handle
                 end
                 fprintf('\n')
             end
-            
+
+            stats = self.statistics;
+
+            % Pulisco la simulazione
+            clear_simulation(self);
+      
+        end %end run
+
+        % Metodo per rinizializzare gli oggetti della simulazione
+        function clear_simulation(sim)
+
+            % Reinizializzazione delle proprietà
+            sim.statistics = {};
+            sim.numero_entita = 0;
+            sim.lista_entita = {};
+            sim.eventi_futuri = FIFOQueue();
+            sim.clock = 0;
+
+            % Reinizializza nodo (libera server + svuota le coda)
+            for id_nodo = 1:sim.network.numero_nodi
+                sim.network.nodi{id_nodo}.clear_node();
+            end
         end
+
 
         
 
