@@ -1,4 +1,4 @@
-function stampa_grafo(network)
+function stampa_grafo(network, verbose)
 
 % questa funzione si occupa della stampa del grafo della rete 
 
@@ -28,9 +28,9 @@ G = digraph(matrice_con_uni);   % crea il grafo
 num_nodi = numnodes(G);
 colore_nodi = repmat([0 0.4470 0.7410], num_nodi, 1); % blu standard
 
-colore_nodi(posizione_sink,:) = [0,0,0]; %il sink è nero
+colore_nodi(posizione_sink,:) = [1,0,0]; %il sink è rosso
 for ind = 1:length(posizione_generatori)
-    colore_nodi(posizione_generatori(ind),:) = [0.8500 0.3250 0.0980]; % rosso
+    colore_nodi(posizione_generatori(ind),:) = [0,1, 0]; % verde
 end
 
 % Disegna il grafo con i colori personalizzati
@@ -55,57 +55,58 @@ end
 title('Graph');
 p.HandleVisibility = 'off';  % <-- Nasconde questo oggetto dalla legenda
 
-% Estrai archi: lista di coppie (source, target)
-sorgenti = G.Edges.EndNodes(:,1);
-destinazioni = G.Edges.EndNodes(:,2);
-
-% Prepara cell array di etichette da mettere sugli archi
-edgeLabels = cell(height(G.Edges), 1);
-
-for k = 1:height(G.Edges)
-    i = sorgenti(k);
-    j = destinazioni(k);
-    val = matrice_di_adiacenza{i,j};
-
-    if isa(val, 'function_handle')
-        % Converte il function handle in stringa
-        fstr = regexprep(func2str(val), '^@\([a-zA-Z0-9_,]+\)', '');  
-        edgeLabels{k} = fstr;
-    elseif isnumeric(val)
-        % Converti numero in stringa
-        edgeLabels{k} = num2str(val);
-    else
-        % Se altro tipo (es. cella vuota, stringa, ecc)
-        edgeLabels{k} = '';
+if verbose
+    
+    % Estrai archi: lista di coppie (source, target)
+    sorgenti = G.Edges.EndNodes(:,1);
+    destinazioni = G.Edges.EndNodes(:,2);
+    
+    % Prepara cell array di etichette da mettere sugli archi
+    edgeLabels = cell(height(G.Edges), 1);
+    
+    for k = 1:height(G.Edges)
+        i = sorgenti(k);
+        j = destinazioni(k);
+        val = matrice_di_adiacenza{i,j};
+    
+        if isa(val, 'function_handle')
+            % Converte il function handle in stringa
+            fstr = regexprep(func2str(val), '^@\([a-zA-Z0-9_,]+\)', '');  
+            edgeLabels{k} = fstr;
+        elseif isnumeric(val)
+            % Converti numero in stringa
+            edgeLabels{k} = num2str(val);
+        else
+            % Se altro tipo (es. cella vuota, stringa, ecc)
+            edgeLabels{k} = '';
+        end
     end
-end
-
-% Aggiungi le etichette agli archi nel plot
-labeledge(p, sorgenti, destinazioni, edgeLabels);
-
-% Trova l'indice di questi archi nel grafo
-for k = 1:size(posizione_function_handle,1)
-    s = posizione_function_handle(k,1);
-    t = posizione_function_handle(k,2);
-    idx_arco = findedge(G, s, t);  % trova indice dell'arco
-    if idx_arco ~= 0
-        highlight(p, s, t, 'EdgeColor', 'g', 'LineWidth', 2); % verde e più spesso
+    
+    % Aggiungi le etichette agli archi nel plot
+    labeledge(p, sorgenti, destinazioni, edgeLabels);
+    
+    % Trova l'indice di questi archi nel grafo
+    for k = 1:size(posizione_function_handle,1)
+        s = posizione_function_handle(k,1);
+        t = posizione_function_handle(k,2);
+        idx_arco = findedge(G, s, t);  % trova indice dell'arco
+        if idx_arco ~= 0
+            highlight(p, s, t, 'EdgeColor', [0.5 0 0.5], 'LineWidth', 2); % verde e più spesso
+        end
     end
+    
+    %  legenda
+    hold on
+    scatter(nan, nan, 70, 'r', 'filled', 'DisplayName', 'Sink');
+    scatter(nan, nan, 70, 'g', 'filled', 'DisplayName', 'Starting Nodes');
+    if ~isempty(posizione_function_handle)
+        scatter(nan, nan, 70, [0.5 0 0.5], 'filled', 'DisplayName', 'Function Handle Arcs');
+    end
+    legend('Location', 'bestoutside');
+    
+else
+    % Se verbose==false, nessuna etichetta viene mostrata
+    p.EdgeLabel = {};
 end
 
-
-
-
-%  legenda
-hold on
-scatter(nan, nan, 70, [0,0,0], 'filled', 'DisplayName', 'Sink');
-scatter(nan, nan, 70, [0.8500 0.3250 0.0980], 'filled', 'DisplayName', 'Starting Nodes');
-if ~isempty(posizione_function_handle)
-    scatter(nan, nan, 70, [0 1 0], 'filled', 'DisplayName', 'Function Handle Arcs');
 end
-legend('Location', 'bestoutside');
-
-
-
-end
-

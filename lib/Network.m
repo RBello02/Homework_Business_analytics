@@ -52,10 +52,10 @@ classdef Network < handle
 
             % Verifica che il sink sia raggiungibile da ogni nodo
             % Esegui una BFS inversa dal sink (invertendo gli archi)
-            matrice_invertita = matrice_numerica';  % Inverti la direzione degli archi
-            nodi_che_possono_raggiungere_sink = BreadthFirstSearch(matrice_invertita, posizione_sink);
+            matrice_invertita = matrice_numerica'; % Inverti la direzione degli archi
+            nodi_che_possono_raggiungere_sink = BreadthFirstSearch(matrice_invertita, posizione_sink).*(1:size(matrice_di_adiacenza,1));
             generatori = self.trova_generatori(distr_arrivo);
-            if all(ismember(generatori,nodi_che_possono_raggiungere_sink))
+            if ~all(ismember(generatori,nodi_che_possono_raggiungere_sink))
                 error('Il sink non è raggiungibile da tutti i nodi, rete non connessa');
             end
             % Il controllo precendentemente fatto non garantisce al 100%

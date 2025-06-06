@@ -10,6 +10,7 @@ function visitati = BreadthFirstSearch(Matrice_adiacenza, Nodo_partenza)
 
     % STEP 1: Inizializzazione del vettore dei nodi visitati:
     visitati = zeros(1, size(Matrice_adiacenza, 1));
+    nodi_visitati = [];
 
     % STEP 2: Inizializzazione della coda:
     coda = [];
@@ -23,6 +24,7 @@ function visitati = BreadthFirstSearch(Matrice_adiacenza, Nodo_partenza)
 
         if visitati(nodo_corrente) == 0
             visitati(nodo_corrente) = 1; % segno il nodo come visitato
+            nodi_visitati(end+1) = nodo_corrente;
 
             lista_di_adiacenza = crea_lista_di_adiacenza(Matrice_adiacenza, nodo_corrente);
 
