@@ -1,4 +1,4 @@
-classdef AvarageEntityNetworkTime < StatManager
+classdef AverageEntityNetworkTime < StatManager
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
 
@@ -7,7 +7,7 @@ classdef AvarageEntityNetworkTime < StatManager
     end
     
     methods
-        function self = AvarageEntityNetworkTime()
+        function self = AverageEntityNetworkTime()
             self.lista{end+1} = 0;    % in questo caso non è una lista ma un intero
             self.Num_entita_uscenti = 0;
         end

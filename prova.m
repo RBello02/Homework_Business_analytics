@@ -38,12 +38,12 @@ distr_arrivo{6} = -1;
 
 % Una matrice per ciascun nodo con distribuzioni di servizio per ciascun nodo (1 server per nodo)
 distr_servizio = cell(n,1);
-distr_servizio{1} = Exponential(30);  
-distr_servizio{2} = Exponential(2);
-distr_servizio{3} = Exponential(18);
-distr_servizio{4} = Exponential(1);
-distr_servizio{5} = Uniform(5,20,false);
-distr_servizio{6} = Uniform(inf, inf, false);
+distr_servizio{1} = {Exponential(30)};  
+distr_servizio{2} = {Exponential(2)};
+distr_servizio{3} = {Exponential(18)};
+distr_servizio{4} = {Exponential(1)};
+distr_servizio{5} = {Uniform(5,20,false)};
+distr_servizio{6} = {Uniform(inf, inf, false)};
 
 % Una matrice per ciascun nodo con policy per cosa
 policy = cell(n,1);

@@ -48,10 +48,10 @@ classdef Simulation < handle
             end
 
             % inizializzo le statistiche
-            self.statistics{end+1} = AvarageEntityNetworkTime();
-            self.statistics{end+1} = AvarageEntityQueuesTime(self.network);
-            self.statistics{end+1} = AvarageNumEntityIntoNetwork(self.verbose);
-            self.statistics{end+1} = AvarageNumEntityIntoNodes(self.network);
+            self.statistics{end+1} = AverageEntityNetworkTime();
+            self.statistics{end+1} = AverageEntityQueuesTime(self.network);
+            self.statistics{end+1} = AverageNumEntityIntoNetwork(self.verbose);
+            self.statistics{end+1} = AverageNumEntityIntoNodes(self.network);
 
 
 

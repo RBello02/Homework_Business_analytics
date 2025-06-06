@@ -1,4 +1,4 @@
-classdef AvarageEntityQueuesTime < StatManager
+classdef AverageEntityQueuesTime < StatManager
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -7,7 +7,7 @@ classdef AvarageEntityQueuesTime < StatManager
     end
     
     methods
-        function self = AvarageEntityQueuesTime(net)
+        function self = AverageEntityQueuesTime(net)
             % net è un oggetto network
             posizione_sink = net.posizione_sink;
             Num_entita_per_coda = zeros(size(net.matrice_di_adiacenza,1),1);

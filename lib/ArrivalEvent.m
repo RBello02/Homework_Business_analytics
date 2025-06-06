@@ -31,10 +31,10 @@ classdef ArrivalEvent < Event
             % ciclo per trovare la statistica: numero medio di entità nella
             % net
             for i = 1:numel(sim.statistics)
-                if isa(sim.statistics{i}, 'AvarageNumEntityIntoNetwork')
+                if isa(sim.statistics{i}, 'AverageNumEntityIntoNetwork')
                    sim.statistics{i}.update_stat(sim.clock, sim.numero_entita)
                 end
-                if isa(sim.statistics{i}, 'AvarageNumEntityIntoNodes')
+                if isa(sim.statistics{i}, 'AverageNumEntityIntoNodes')
                     sim.statistics{i}.update_stat(self.nodoID, sim.clock, length(sim.network.nodi{self.nodoID}.coda))
                 end
             end

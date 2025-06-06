@@ -1,4 +1,4 @@
-classdef AvarageNumEntityIntoNodes < StatManager
+classdef AverageNumEntityIntoNodes < StatManager
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -8,7 +8,7 @@ classdef AvarageNumEntityIntoNodes < StatManager
     end
     
     methods
-        function self = AvarageNumEntityIntoNodes(net)
+        function self = AverageNumEntityIntoNodes(net)
             self.tracker_time = zeros(size(net.matrice_di_adiacenza,1),1);
             self.tracker_value = zeros(size(net.matrice_di_adiacenza,1),1);
             posizione_sink = net.posizione_sink;
@@ -38,8 +38,7 @@ classdef AvarageNumEntityIntoNodes < StatManager
                 else
                     error('Impossibile calcolare la lunghezza media di entità nel nodo')
                 end
-            end
-            
+            end          
         end
     end
 end

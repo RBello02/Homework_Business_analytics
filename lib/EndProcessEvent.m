@@ -43,9 +43,9 @@ classdef EndProcessEvent < Event
 
                 % ciclo per trovare la statistica: tempo medio nella network
                 for i = 1:numel(sim.statistics)
-                    if isa(sim.statistics{i}, 'AvarageEntityNetworkTime')
+                    if isa(sim.statistics{i}, 'AverageEntityNetworkTime')
                        sim.statistics{i}.update_stat(ent.istante_di_arrivo_glob, clock)
-                    elseif isa(sim.statistics{i}, 'AvarageNumEntityIntoNetwork')
+                    elseif isa(sim.statistics{i}, 'AverageNumEntityIntoNetwork')
                        sim.statistics{i}.update_stat(sim.clock, sim.numero_entita)
                     end
                 end

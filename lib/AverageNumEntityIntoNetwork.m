@@ -1,4 +1,4 @@
-classdef AvarageNumEntityIntoNetwork < StatManager
+classdef AverageNumEntityIntoNetwork < StatManager
     % AVARAGENUMENTITYINTONETWORK Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -12,7 +12,7 @@ classdef AvarageNumEntityIntoNetwork < StatManager
     end
     
     methods
-        function self = AvarageNumEntityIntoNetwork(verbose)
+        function self = AverageNumEntityIntoNetwork(verbose)
             self.tracker_time = 0;
             self.tracker_value = 0;
             self.lista{end+1} = 0;
