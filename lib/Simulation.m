@@ -27,11 +27,14 @@ classdef Simulation < handle
             self.network = net;
             self.eventi_futuri = FIFOQueue();
             self.clock = 0;
-            self.attributi_entita = attributi_entita;
             self.numero_entita = 0;
             self.lista_entita = {};
             self.verbose = false;
             self.statistics = {};
+
+            if nargin == 2 && ~isempty(attributi_entita)
+                self.attributi_entita = attributi_entita;
+            end
         end
        
 

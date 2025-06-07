@@ -31,28 +31,30 @@ classdef Entity < handle
             sim.lista_entita{end+1} = self;
             
             % Inizializzo la struct proprietà dell'entità
-            self.proprieta = struct();
-            campi = fieldnames(attr);
-            for i = 1:length(campi)
-                campo = campi{i};
-                valori_possibili = attr.(campo);
-                
-                % Se è cell array, scelgo casualmente un valore
-                if iscell(valori_possibili)
-                    idx = randi(length(valori_possibili));
-                    self.proprieta.(campo) = valori_possibili{idx};
-                
-                % Se è vettore numerico o stringa, scelgo casualmente un elemento
-                elseif isnumeric(valori_possibili) || isstring(valori_possibili) || ischar(valori_possibili)
-                    idx = randi(length(valori_possibili));
-                    self.proprieta.(campo) = valori_possibili(idx);
-                
-                % Altrimenti assegno direttamente il valore singolo
-                else
-                    self.proprieta.(campo) = valori_possibili;
+            if ~isempty(attr)
+                self.proprieta = struct();
+                campi = fieldnames(attr);
+                for i = 1:length(campi)
+                    campo = campi{i};
+                    valori_possibili = attr.(campo);
+                    
+                    % Se è cell array, scelgo casualmente un valore
+                    if iscell(valori_possibili)
+                        idx = randi(length(valori_possibili));
+                        self.proprieta.(campo) = valori_possibili{idx};
+                    
+                    % Se è vettore numerico o stringa, scelgo casualmente un elemento
+                    elseif isnumeric(valori_possibili) || isstring(valori_possibili) || ischar(valori_possibili)
+                        idx = randi(length(valori_possibili));
+                        self.proprieta.(campo) = valori_possibili(idx);
+                    
+                    % Altrimenti assegno direttamente il valore singolo
+                    else
+                        self.proprieta.(campo) = valori_possibili;
+                    end
                 end
             end
-            
+
             % Personalizzo la matrice di transizione in base agli attributi
             self.matrice_del_percorso = self.PersonalizzaRoute(matr_adiac_net);
             
