@@ -2,7 +2,8 @@ classdef (Abstract) StatManager < handle
     % StatManager è una classe astratta che gestisce le statistic e
     
     properties
-        lista     % cell array di lunghezza variabile
+        sums     % cell array di lunghezza variabile
+        results
     end
     
     methods (Abstract)

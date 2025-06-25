@@ -8,18 +8,19 @@ classdef AverageEntityNetworkTime < StatManager
     
     methods
         function self = AverageEntityNetworkTime()
-            self.lista{end+1} = 0;    % in questo caso non è una lista ma un intero
+            self.sums = 0;    % in questo caso non è una lista ma un intero
             self.Num_entita_uscenti = 0;
         end
         
         function update_stat(self, tempo_di_arrivo, tempo_di_rilascio)
             self.Num_entita_uscenti = self.Num_entita_uscenti + 1;
-            self.lista{end} = self.lista{end} + (tempo_di_rilascio-tempo_di_arrivo);
+            self.sums = self.sums + (tempo_di_rilascio-tempo_di_arrivo);
         end
 
         function stat = return_stat(self)
             if self.Num_entita_uscenti ~= 0
-                stat = self.lista{end}/self.Num_entita_uscenti;
+                stat = self.sums/self.Num_entita_uscenti;
+                self.results = stat;
             else
                 error('Nessun entità ha lasciato la rete')
             end

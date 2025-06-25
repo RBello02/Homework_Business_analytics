@@ -15,7 +15,7 @@ classdef AverageNumEntityIntoNetwork < StatManager
         function self = AverageNumEntityIntoNetwork(verbose)
             self.tracker_time = 0;
             self.tracker_value = 0;
-            self.lista{end+1} = 0;
+            self.sums = 0;
             self.x_plot = [];
             self.y_plot = [];
 
@@ -35,7 +35,7 @@ classdef AverageNumEntityIntoNetwork < StatManager
             % num_entita è l'altezza del rettangolo che stiamo iniziando
             % (clock-self.tracker_time) è la base del rettangolo da chiudere
 
-            self.lista{end} = self.lista{end} + (clock-self.tracker_time)*self.tracker_value;
+            self.sums = self.sums + (clock-self.tracker_time)*self.tracker_value;
             y_middle = self.tracker_value;  % serve per il plot dei rettangoli
             self.tracker_value = num_entita;
             x_before = self.tracker_time;    % serve per il plot
@@ -67,7 +67,8 @@ classdef AverageNumEntityIntoNetwork < StatManager
             self.update_stat(sim.clock, 0)
             
             if self.tracker_time ~= 0
-                stat = self.lista{end}/self.tracker_time;
+                stat = self.sums/self.tracker_time;
+                self.results = stat;
             else
                 error('Impossibile calcolare la lunghezza media di entità nel network')
             end
