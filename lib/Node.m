@@ -58,6 +58,12 @@ classdef Node < handle
         function aggiunta_cliente_al_nodo(self, entita, sim)
             self.coda.enqueue(entita, sim.clock);  % metto in coda l'entità
             self.try_servizio(sim);                % provo a servire l'entità
+
+            for i = 1:numel(sim.statistics)
+                if isa(sim.statistics{i}, 'AverageNumEntityIntoNodes')
+                    sim.statistics{i}.update_stat(self.id, sim.clock, length(sim.network.nodi{self.id}.coda.lista))
+                end
+            end
         end
         
         
@@ -99,7 +105,7 @@ classdef Node < handle
                 if isa(sim.statistics{i}, 'AverageEntityQueuesTime')
                    sim.statistics{i}.update_stat(self.id, entita_da_servire.timestamp_coda,sim.clock)
                 elseif isa(sim.statistics{i}, 'AverageNumEntityIntoNodes')
-                   sim.statistics{i}.update_stat(self.id, sim.clock, length(self.coda))
+                   sim.statistics{i}.update_stat(self.id, sim.clock, length(self.coda.lista))
                 end
             end
             

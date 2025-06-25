@@ -9,7 +9,8 @@ classdef Simulation < handle
         eventi_futuri
         clock 
         lista_entita % lista delle entità attualmente nella network
-        numero_entita % numero di entità che sono passate
+        numero_entita % numero di entità nel sistema
+        num_tot_entita % mi serve per assegnare un id univoco alle entità che genero
 
         attributi_entita 
         % struct del tipo nome_attr : {'val1', 'val2'} --> l'entità
@@ -31,6 +32,7 @@ classdef Simulation < handle
             self.lista_entita = {};
             self.verbose = false;
             self.statistics = {};
+            self.num_tot_entita = 0;
 
             if nargin == 2 && ~isempty(attributi_entita)
                 self.attributi_entita = attributi_entita;
@@ -87,10 +89,13 @@ classdef Simulation < handle
             fprintf("\n FINE SIMULAZIONE \n\n")
             
             % stampo le statistiche
+            avg_ent_net_time = self.statistics{1}.return_stat();
+            avg_ent_queues_time = self.statistics{2}.return_stat(self);
+            avg_num_ent_net = self.statistics{3}.return_stat(self);
+            avg_num_ents_nodes = self.statistics{4}.return_stat(self);
+
             if self.verbose
-                avg_ent_net_time = self.statistics{1}.return_stat();
                 fprintf('\n Avarage time into the network per entity  = %3.2f\n', avg_ent_net_time)
-                avg_ent_queues_time = self.statistics{2}.return_stat(self);
                 fprintf('\n Avarage time spent in the queues per entity:\n')
                 for i = 1:size(self.network.matrice_di_adiacenza,1)
                     if i~=self.network.posizione_sink
@@ -99,9 +104,7 @@ classdef Simulation < handle
                         fprintf('\n Node %1.f: SINK', i)
                     end
                 end
-                avg_num_ent_net = self.statistics{3}.return_stat(self);
                 fprintf('\n\n Avarage number of entities in the network  = %3.2f\n', avg_num_ent_net)
-                avg_num_ents_nodes = self.statistics{4}.return_stat(self);
                 fprintf('\n Avarage number of entities in the nodes of the network:\n')
                 for i = 1:size(self.network.matrice_di_adiacenza,1)
                     if i~=self.network.posizione_sink

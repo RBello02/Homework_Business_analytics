@@ -26,7 +26,8 @@ classdef Entity < handle
 
             matr_adiac_net = sim.network.matrice_di_adiacenza;
             sim.numero_entita = sim.numero_entita +1;
-            id_ent = sim.numero_entita;
+            sim.num_tot_entita = sim.num_tot_entita +1;
+            id_ent = sim.num_tot_entita;
             self.id = id_ent;
             sim.lista_entita{end+1} = self;
             

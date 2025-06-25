@@ -19,7 +19,7 @@ classdef AverageNumEntityIntoNodes < StatManager
         end
         
         function update_stat(self, indice_nodo, clock, num_entita_nel_nodo)
-            self.sums(indice_nodo) = self.sums(indice_nodo)+ (clock-self.tracker_time(indice_nodo))*self.tracker_value(indice_nodo);
+            self.sums(indice_nodo) = self.sums(indice_nodo) + (clock-self.tracker_time(indice_nodo))*self.tracker_value(indice_nodo);
             self.tracker_value(indice_nodo) = num_entita_nel_nodo;
             self.tracker_time(indice_nodo) = clock;
         end
